@@ -12,19 +12,27 @@ What to adjust:
 ## ------- end to remove -------
 <!-- add Project Logo, if existing -->
 
-# repo or project name
+# Under construction
+
+This project is currently being buildt and is not yet ready for use.
+
+# Kitafinder-Datenservice
 
 [![Made with love by it@M][made-with-love-shield]][itm-opensource]
 <!-- feel free to add more shields, style 'for-the-badge' -> see https://shields.io/badges -->
 
-*Add a description from your project here.*
-
+This Application exports important data from Munichs kita finder + and makes it available for further use.
 
 ### Built With
 
 The documentation project is built with technologies we use in our projects:
 
-* *write here the list of used technologies*
+* Spring Boot
+* Maven
+* Docker
+* Java
+* PostgreSQL
+* Flyway
 
 ## Roadmap
 

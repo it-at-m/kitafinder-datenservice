@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.4.4</version>
+	</parent>
+
+	<groupId>de.muenchen.rbs.kitafinder-datenservice</groupId>
+	<artifactId>kitafinder-datenservice-parent</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>kitafinder-datenservice :: parent</name>
+	<description>TODO</description>
+	<url>TODO</url>
+
+	<modules>
+		<module>core</module>
+		<!--module>web</module-->
+		<module>batch</module>
+	</modules>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>21</java.version>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- make sure to update parent pom version! -->
+		<spring.boot.version>3.4.4</spring.boot.version>
+	</properties>
+
+    <!-- TODO -->
+	<scm>
+		<connection>scm:git:https://git.muenchen.de/km23/einrichtungsverwaltung/einrichtungsverwaltung.git</connection>
+		<developerConnection>scm:git:https://git.muenchen.de/km23/einrichtungsverwaltung/einrichtungsverwaltung.git</developerConnection>
+		<url>https://git.muenchen.de/km23/einrichtungsverwaltung/einrichtungsverwaltung.git</url>
+		<tag>HEAD</tag>
+	</scm>
+    <!-- TODO -->
+	<distributionManagement>
+		<repository>
+			<id>mvn-release-local</id>
+			<name>Landeshauptstadt Muenchen IT@M Releases</name>
+			<url>${address.repository}/mvn-release-local</url>
+		</repository>
+		<snapshotRepository>
+			<id>mvn-snapshot-local</id>
+			<name>Landeshauptstadt Muenchen IT@M Snapshots</name>
+			<url>${address.repository}/mvn-snapshot-local</url>
+		</snapshotRepository>
+	</distributionManagement>
+    <!-- TODO -->
+	<ciManagement>
+		<system>gitlab</system>
+		<url>https://git.muenchen.de/km23/einrichtungsverwaltung/einrichtungsverwaltung/-/pipelines</url>
+	</ciManagement>
+    <!-- TODO -->
+	<issueManagement>
+		<system>gitlab</system>
+		<url>https://git.muenchen.de/km23/einrichtungsverwaltung/einrichtungsverwaltung/-/issues</url>
+	</issueManagement>
+
+	<dependencyManagement>
+		<dependencies>
+            <!-- Import dependency management from Spring Boot -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring.boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<developers>
+		<developer>
+			<id>m.zollbrecht</id>
+			<name>Maximilian Zollbrecht</name>
+			<email>m.zollbrecht@muenchen.de</email>
+			<roles>
+				<role>Lead-Developer</role>
+			</roles>
+		</developer>
+	</developers>
+</project>
