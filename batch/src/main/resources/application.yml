@@ -1,0 +1,43 @@
+spring:
+  application.name: kitafinder-datenservice-batch
+
+  profiles.active:
+    - local
+
+  docker:
+    compose:
+      enabled: false
+
+app:
+  kitafinder:
+    base-url: http://kitafinder-plan-k3.muenchen.de/kitaplaner/api
+    username: # provide locally
+    password: # provide locally
+    timeout-seconds: 30
+    export:
+      schedule: 0 4 * * * * # 01.00 Uhr
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  
+  datasource:
+    url: jdbc:tc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: admin
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: admin
+    password: admin
+  docker:
+    compose:
+      enabled: true
+      file: stack/docker-compose.yml

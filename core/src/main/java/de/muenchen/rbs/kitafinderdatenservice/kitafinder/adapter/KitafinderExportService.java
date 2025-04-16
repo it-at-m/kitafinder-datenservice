@@ -54,7 +54,7 @@ public class KitafinderExportService {
 		this.kitafinderApiUsername = kitafinderApiUsername;
 		this.kitafinderApiPassword = kitafinderApiPassword;
 
-		log.info("Initialisiere KitafinderService mit baseUrl={}, timeout={}s", baseUrl, timeoutSeconds);
+		log.info("Initializing KitafinderService with baseUrl={} and timeout={}s", baseUrl, timeoutSeconds);
 
 		this.webClient = webClientBuilder.baseUrl(this.baseUrl).build();
 	}

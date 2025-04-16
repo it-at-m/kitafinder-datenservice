@@ -1,0 +1,46 @@
+spring:
+  application.name: kitafinder-datenservice-web
+
+  profiles.active:
+    - local
+
+  docker:
+    compose:
+      enabled: false
+
+app:
+  security:
+    sso-base-url: https://ssodev.muenchen.de
+    realm: A23
+    token-url: ${app.security.sso-base-url}/auth/realms/${app.security.realm}/protocol/openid-connect/token
+    issuer-url: ${app.security.sso-base-url}/auth/realms/${app.security.realm}
+    client-id: kitafinder-datenservice
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  
+  datasource:
+    url: jdbc:tc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: admin
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  security.oauth2.resourceserver.jwt:
+    issuer-uri: https://your-auth-server.com/issuer
+    jwk-set-uri: https://your-auth-server.com/.well-known/jwks.json
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: admin
+    password: admin
+  docker:
+    compose:
+      enabled: true
+      file: stack/docker-compose.yml
