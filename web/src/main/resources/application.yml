@@ -10,8 +10,8 @@ spring:
 
 app:
   security:
-    sso-base-url: https://ssodev.muenchen.de
-    realm: A23
+    sso-base-url: http://localhost:8100
+    realm: KM23
     token-url: ${app.security.sso-base-url}/auth/realms/${app.security.realm}/protocol/openid-connect/token
     issuer-url: ${app.security.sso-base-url}/auth/realms/${app.security.realm}
     client-id: kitafinder-datenservice

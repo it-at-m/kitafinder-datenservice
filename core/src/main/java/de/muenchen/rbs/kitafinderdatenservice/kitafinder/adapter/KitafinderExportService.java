@@ -3,9 +3,7 @@ package de.muenchen.rbs.kitafinderdatenservice.kitafinder.adapter;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-@ConditionalOnProperty(prefix = "app.kitafinder", name = {"base-url", "username", "password"})
+@ConditionalOnProperty(prefix = "app.kitafinder", name = { "base-url", "username", "password" })
 public class KitafinderExportService {
 
 	private final WebClient webClient;
@@ -41,11 +39,13 @@ public class KitafinderExportService {
 	private final String kitafinderApiPassword;
 
 	/**
-	 * Erzeugt eine neue Instanz.
+	 * Creates a new instance.
 	 * 
-	 * @param baseUrl          Base-URL der Einrichtungsverwaltung API
-	 * @param webClientBuilder ein {@link WebClient.Builder}
-	 * @param timeoutSeconds   der Timeout für Anfragen in Sekunden
+	 * @param baseUrl               base-URL of the kitafinder-API
+	 * @param webClientBuilder      {@link WebClient.Builder}
+	 * @param timeoutSeconds        timeout in seconds
+	 * @param kitafinderApiUsername username for accessing the kitafinder-API
+	 * @param kitafinderApiPassword password for accessing the kitafinder-API
 	 */
 	public KitafinderExportService(@Value("${app.kitafinder.base-url}") String baseUrl,
 			@Value("${app.kitafinder.timeout-seconds:30}") long timeoutSeconds, WebClient.Builder webClientBuilder,
@@ -71,47 +71,29 @@ public class KitafinderExportService {
 					}).retrieve().toEntity(returnType).block(Duration.ofSeconds(this.timeoutSeconds));
 
 			if (!response.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
-				throw new KitafinderExportException(
-						"Fehler beim Laden der Kitafinder-Daten. Response-Code: " + response.getStatusCode().value());
+				throw new KitafinderExportException("An error occured when calling the kitafinder. Response code: "
+						+ response.getStatusCode().value());
 			} else if (response.getBody().getFehlermeldung() != null) {
-				throw new KitafinderExportException("Fehler beim Laden der Kitafinder-Daten. Fehlermeldung: "
-						+ response.getBody().getFehlermeldung());
+				throw new KitafinderExportException(response.getBody().getFehlermeldung());
 			} else {
 				return response.getBody();
 			}
 		} catch (WebClientRequestException | WebClientResponseException e) {
-			log.error("Unerwarteter Fehler bei Abfrage vom Kitafinder.", e);
-			throw new KitafinderExportException("Fehler beim Laden der Kitafinder-Daten.");
+			log.error("An error occured when calling the kitafinder.", e);
+			throw new KitafinderExportException(e.getClass().getName());
 		}
 	}
 
 	public KitafinderExport loadKitafinderData(Collection<Integer> kindMappenIds) {
-		log.debug("Frage Daten beim Kitafinder ab. Ids: {}", kindMappenIds.toString());
-
 		return this.kitafinderGetRequest(KitafinderExport.class,
 				uriBuilder -> uriBuilder.path("/rbs/kindmappen").queryParam("kindMappenIds", kindMappenIds).build());
 	}
 
-	public List<Integer> loadKitafinderKindmappenIds() {
-		final int chunkSize = 100;
-		int offset = 0;
+	public Collection<Integer> loadKitafinderKindmappenIds(int chunkSize, int offset) {
+		KitafinderKindmappenIds ids = this.kitafinderGetRequest(KitafinderKindmappenIds.class, uriBuilder -> uriBuilder
+				.path("/rbs/kindmappenids").queryParam("offset", offset).queryParam("fetch", chunkSize).build());
 
-		List<Integer> kindmappenIds = new ArrayList<>();
-
-		Collection<Integer> newIds = null;
-		while (newIds == null || newIds.size() == chunkSize) {
-			final int finalOffset = offset;
-			log.info("Frage {} Kindmappen-Ids ab {} ab...", chunkSize, finalOffset);
-			KitafinderKindmappenIds ids = this.kitafinderGetRequest(KitafinderKindmappenIds.class,
-					uriBuilder -> uriBuilder.path("/rbs/kindmappenids").queryParam("offset", finalOffset)
-							.queryParam("fetch", chunkSize).build());
-
-			newIds = ids.getKindMappenIds();
-			kindmappenIds.addAll(newIds);
-			offset++;
-		}
-
-		return kindmappenIds;
+		return ids.getKindMappenIds();
 	}
 
 }

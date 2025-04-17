@@ -5,7 +5,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import de.muenchen.rbs.kitafinderdatenservice.batch.KitafinderExportBatch;
+import de.muenchen.rbs.kitafinderdatenservice.batch.KitafinderDatenBatch;
+import de.muenchen.rbs.kitafinderdatenservice.batch.KitafinderIdBatch;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -13,7 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 public class KitafinderBatchApplication implements CommandLineRunner {
 
 	@Autowired
-	private KitafinderExportBatch batch;
+	private KitafinderIdBatch idBatch;
+	@Autowired
+	private KitafinderDatenBatch datenBatch;
 
 	public static void main(String[] args) {
 		SpringApplication.run(KitafinderBatchApplication.class, args);
@@ -21,7 +24,11 @@ public class KitafinderBatchApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) {
-		batch.loadKitafinderData();
+		idBatch.loadKitafinderIds();
+
+		datenBatch.loadKitafinderData();
+
+		System.exit(0);
 	}
 
 }

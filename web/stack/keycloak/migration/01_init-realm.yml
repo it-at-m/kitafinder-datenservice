@@ -2,9 +2,13 @@ id: init realm
 author: Default
 changes:
   - addRealm:
-      name: local_realm
+      name: KM23
 
   - addClientScope:
-      realm: local_realm
+      realm: KM23
       name: openid
       description: Client scope used for OpenID Connect (OIDC) based authentication
+  - addClientScope:
+      realm: KM23
+      name: LHM_Extended
+      description: Default scope for LHM applications

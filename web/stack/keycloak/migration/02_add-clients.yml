@@ -1,18 +1,28 @@
-id: add and configure local client
+id: add and configure client
 author: Default
-realm: local_realm
+realm: KM23
 changes:
   - addSimpleClient:
-      clientId: local
+      clientId: kitafinder-datenservice
       secret: client_secret
       publicClient: false
+      serviceAccountsEnabled: true
       redirectUris:
-        - http://*
-        - https://*
+        - "*"
+
+  - updateClient:
+      clientId: kitafinder-datenservice
+      secret: client_secret
+      publicClient: false
+      serviceAccountsEnabled: true
+      redirectUris:
+        - "*"
+      webOrigins:
+        - "*"
 
   # Maps user client roles of current client into a claim "authorities"
   - addClientMapper:
-      clientId: local
+      clientId: kitafinder-datenservice
       name: userClientRolesAuthorities
       protocolMapper: oidc-usermodel-client-role-mapper
       config:
@@ -22,10 +32,13 @@ changes:
         jsonType.label: String
         multivalued: true
         claim.name: "authorities"
-        usermodel.clientRoleMapping.clientId: local
+        usermodel.clientRoleMapping.clientId: kitafinder-datenservice
         usermodel.clientRoleMapping.rolePrefix: "ROLE_"
 
   # !!! very import must have. Without that default scope u dont have access to userinfo-endpoint
   - assignDefaultClientScope:
-      clientId: local
+      clientId: kitafinder-datenservice
       clientScopeName: openid
+  - assignDefaultClientScope:
+      clientId: kitafinder-datenservice
+      clientScopeName: LHM_Extended
