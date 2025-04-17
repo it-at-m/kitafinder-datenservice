@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
@@ -26,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(prefix = "app.kitafinder", name = {"base-url", "username", "password"})
 public class KitafinderExportService {
 
 	private final WebClient webClient;
@@ -46,7 +48,7 @@ public class KitafinderExportService {
 	 * @param timeoutSeconds   der Timeout für Anfragen in Sekunden
 	 */
 	public KitafinderExportService(@Value("${app.kitafinder.base-url}") String baseUrl,
-			@Value("${app.kitafinder.timeout-seconds}") long timeoutSeconds, WebClient.Builder webClientBuilder,
+			@Value("${app.kitafinder.timeout-seconds:30}") long timeoutSeconds, WebClient.Builder webClientBuilder,
 			@Value("${app.kitafinder.username}") String kitafinderApiUsername,
 			@Value("${app.kitafinder.password}") String kitafinderApiPassword) {
 		this.baseUrl = baseUrl;

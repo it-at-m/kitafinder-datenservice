@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
-public class SecurityConfig {
+public class SecurityConfiguration {
 
 	private static final String AUD_CLAIM = "aud";
 

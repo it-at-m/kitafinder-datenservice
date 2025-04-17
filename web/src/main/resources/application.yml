@@ -44,3 +44,5 @@ spring:
     compose:
       enabled: true
       file: stack/docker-compose.yml
+
+springdoc.show-actuator: true
