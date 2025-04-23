@@ -17,6 +17,7 @@ app:
     timeout-seconds: 30
     id-batch-size: 500
     data-batch-size: 50
+    cleanup-age: 2
     export:
       schedule: 0 4 * * * * # 01.00 Uhr
 ---

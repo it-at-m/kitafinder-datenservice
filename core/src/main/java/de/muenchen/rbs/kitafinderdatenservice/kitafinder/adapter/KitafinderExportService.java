@@ -12,7 +12,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -24,13 +25,15 @@ import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Component
+@Service
 @ConditionalOnProperty(prefix = "app.kitafinder", name = { "base-url", "username", "password" })
 public class KitafinderExportService {
 
 	private final WebClient webClient;
 
 	private final long timeoutSeconds;
+
+	private final int retryMaxAttempts;
 
 	private final String baseUrl;
 
@@ -48,11 +51,13 @@ public class KitafinderExportService {
 	 * @param kitafinderApiPassword password for accessing the kitafinder-API
 	 */
 	public KitafinderExportService(@Value("${app.kitafinder.base-url}") String baseUrl,
-			@Value("${app.kitafinder.timeout-seconds:30}") long timeoutSeconds, WebClient.Builder webClientBuilder,
+			@Value("${app.kitafinder.timeout-seconds:30}") long timeoutSeconds,
+			@Value("${app.kitafinder.retry-attempts:3}") int retryMaxAttempts, WebClient.Builder webClientBuilder,
 			@Value("${app.kitafinder.username}") String kitafinderApiUsername,
 			@Value("${app.kitafinder.password}") String kitafinderApiPassword) {
 		this.baseUrl = baseUrl;
 		this.timeoutSeconds = timeoutSeconds;
+		this.retryMaxAttempts = retryMaxAttempts;
 		this.kitafinderApiUsername = kitafinderApiUsername;
 		this.kitafinderApiPassword = kitafinderApiPassword;
 
@@ -61,6 +66,7 @@ public class KitafinderExportService {
 		this.webClient = webClientBuilder.baseUrl(this.baseUrl).build();
 	}
 
+	@Retryable(maxAttemptsExpression = "#{@retryMaxAttempts}", retryFor = { KitafinderExportException.class })
 	public <T extends KitafinderResponse> T kitafinderGetRequest(Class<T> returnType, Function<UriBuilder, URI> uri)
 			throws KitafinderExportException {
 		try {

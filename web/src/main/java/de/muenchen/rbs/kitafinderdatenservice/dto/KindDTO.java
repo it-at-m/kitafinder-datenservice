@@ -6,7 +6,8 @@ import lombok.Data;
 
 @Data
 public class KindDTO {
-	private String id;
-	private LocalDateTime stand;
+	private Integer id;
+	private Integer exportId;
+	private LocalDateTime timestamp;
 	private String kindAkten;
 }

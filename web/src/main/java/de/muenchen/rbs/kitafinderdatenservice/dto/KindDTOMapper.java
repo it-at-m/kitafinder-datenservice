@@ -12,7 +12,7 @@ public interface KindDTOMapper {
 	KindDTOMapper INSTANCE = Mappers.getMapper(KindDTOMapper.class);
 
 	@Mapping(target = "id", expression = "java(kind.getId().getId())")
-	@Mapping(target = "stand", expression = "java(kind.getId().getStand())")
+	@Mapping(target = "exportId", expression = "java(kind.getId().getExportId())")
 	KindDTO kindToKindDTO(Kind kind);
 
 }

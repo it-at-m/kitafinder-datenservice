@@ -47,8 +47,8 @@ public class KitafinderIdBatch {
 			offset += batchSize;
 		}
 
-		Duration dauer = Duration.between(exportStart, LocalDateTime.now());
-		log.info("Kitafinder id export completed. Duration: {}, number of ids: {}", dauer.toString(),
+		Duration duration = Duration.between(exportStart, LocalDateTime.now());
+		log.info("Kitafinder id export completed. Duration: {}, number of ids: {}", duration.toString(),
 				offset - batchSize + newIds.size());
 	}
 

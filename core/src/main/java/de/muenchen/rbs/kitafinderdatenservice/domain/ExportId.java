@@ -1,7 +1,6 @@
 package de.muenchen.rbs.kitafinderdatenservice.domain;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
@@ -14,10 +13,17 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class TimedId implements Serializable {
+public class ExportId implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String id;
-	private LocalDateTime stand;
+	/**
+	 * domain id
+	 */
+	private Integer id;
+	
+	/**
+	 * technical id referencing an export run
+	 */
+	private Integer exportId;
 }

@@ -6,6 +6,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import de.muenchen.rbs.kitafinderdatenservice.domain.KindmappeId;
 
 public interface KindmappeIdRepository
-		extends PagingAndSortingRepository<KindmappeId, String>, CrudRepository<KindmappeId, String> {
+		extends PagingAndSortingRepository<KindmappeId, Integer>, CrudRepository<KindmappeId, Integer> {
 
 }

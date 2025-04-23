@@ -12,17 +12,16 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-public class Kind {
+public class ExportError {
 
 	@EmbeddedId
 	private ExportId id;
 
 	private LocalDateTime timestamp;
 
-	private String kindAkten;
+	private String errorMessage;
 
 	@ManyToOne
 	@JoinColumn(name = "exportId", nullable = false, insertable = false, updatable = false)
 	private ExportRun exportRun;
-
 }
