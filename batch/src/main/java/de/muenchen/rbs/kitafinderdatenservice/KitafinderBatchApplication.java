@@ -4,9 +4,12 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.retry.annotation.EnableRetry;
 
 import de.muenchen.rbs.kitafinderdatenservice.batch.KitafinderCleanupBatch;
@@ -31,13 +34,20 @@ public class KitafinderBatchApplication implements CommandLineRunner {
 	private KitafinderCleanupBatch cleanupBatch;
 	@Autowired
 	private ExportRunRepository exportRunRepository;
+	
+	@Autowired
+    private ApplicationContext context;
+	
+	@Value("${app.auto-close:true}")
+	private boolean autoClose;
+	
 
 	public static void main(String[] args) {
 		SpringApplication.run(KitafinderBatchApplication.class, args);
 	}
 
 	@Override
-	public void run(String... args) {
+	public void run(String... args) throws InterruptedException {
 		ExportRun run = new ExportRun();
 		run.setStatus(ExportStatus.RUNNING);
 		run.setStartTime(LocalDateTime.now());
@@ -60,7 +70,9 @@ public class KitafinderBatchApplication implements CommandLineRunner {
 		log.info("Finished export {} at {} with status {}. Took {}...", run.getId(), run.getEndTime(), run.getStatus(),
 				duration.toString());
 
-		System.exit(0);
+		if (autoClose) {
+			((ConfigurableApplicationContext) context).close();
+		}
 	}
 
 	@Transactional

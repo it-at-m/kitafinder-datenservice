@@ -61,7 +61,8 @@ public class KitafinderExportService {
 		this.kitafinderApiUsername = kitafinderApiUsername;
 		this.kitafinderApiPassword = kitafinderApiPassword;
 
-		log.info("Initializing KitafinderService with baseUrl={} and timeout={}s", baseUrl, timeoutSeconds);
+		log.info("Initializing KitafinderService with baseUrl={}, timeout={}s and maxAttempts={}", this.baseUrl,
+				this.timeoutSeconds, this.retryMaxAttempts);
 
 		this.webClient = webClientBuilder.baseUrl(this.baseUrl).build();
 	}
@@ -77,8 +78,8 @@ public class KitafinderExportService {
 					}).retrieve().toEntity(returnType).block(Duration.ofSeconds(this.timeoutSeconds));
 
 			if (!response.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
-				throw new KitafinderExportException("An error occured when calling the kitafinder. Response code: "
-						+ response.getStatusCode().value());
+				throw new KitafinderExportException(
+						"An error occured when calling kitafinder. Response code: " + response.getStatusCode().value());
 			} else if (response.getBody().getFehlermeldung() != null) {
 				throw new KitafinderExportException(response.getBody().getFehlermeldung());
 			} else {
