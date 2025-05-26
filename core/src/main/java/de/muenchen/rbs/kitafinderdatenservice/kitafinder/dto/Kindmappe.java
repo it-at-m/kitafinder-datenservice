@@ -9,4 +9,5 @@ public class Kindmappe {
 	private Integer id;
 	private boolean isGefunden;
 	private List<Kindakte> kindAkten;
+	private ErmittlungsDauer ermittlungsDauer;
 }
