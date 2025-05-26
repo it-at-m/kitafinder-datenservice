@@ -76,13 +76,13 @@ jobs:
       - name: Download artifacts batch
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts
+          name: build-artifacts-batch
           path: ${{ env.MVN_BUILD_TARGET_BATCH }}
 
       - name: Download artifacts web
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts
+          name: build-artifacts-web
           path: ${{ env.MVN_BUILD_TARGET_WEB }}
 
       - name: Set up QEMU
