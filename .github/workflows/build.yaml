@@ -15,7 +15,8 @@ env:
   MVN_PROJECT_ROOT: ./
   MVN_SUBPROJECT_BATCH: ./batch
   MVN_SUBPROJECT_WEB: ./web
-  MVN_BUILD_TARGET: ./target 
+  MVN_BUILD_TARGET_BATCH: ./batch/target 
+  MVN_BUILD_TARGET_WEB: ./web/target 
 
 jobs:
   compliance:
@@ -53,11 +54,17 @@ jobs:
         working-directory: ${{ env.MVN_PROJECT_ROOT }}
         run: mvn install
         
-      - name: Archive artifacts
+      - name: Archive artifacts batch
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifacts
-          path: ${{ env.MVN_BUILD_TARGET }}
+          name: build-artifacts-batch
+          path: ${{ env.MVN_BUILD_TARGET_BATCH }}
+        
+      - name: Archive artifacts web
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-web
+          path: ${{ env.MVN_BUILD_TARGET_WEB }}
 
   build-and-push-image-to-ghcr:
     runs-on: ubuntu-latest
@@ -66,11 +73,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download artifacts
+      - name: Download artifacts batch
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
-          path: ${{ env.MVN_BUILD_TARGET }}
+          path: ${{ env.MVN_BUILD_TARGET_BATCH }}
+
+      - name: Download artifacts web
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: ${{ env.MVN_BUILD_TARGET_WEB }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
