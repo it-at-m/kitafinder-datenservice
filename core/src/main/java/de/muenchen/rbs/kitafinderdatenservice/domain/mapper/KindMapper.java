@@ -1,10 +1,12 @@
 package de.muenchen.rbs.kitafinderdatenservice.domain.mapper;
 
+import java.time.LocalDateTime;
+
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import de.muenchen.rbs.kitafinderdatenservice.domain.ExportId;
 import de.muenchen.rbs.kitafinderdatenservice.domain.Kind;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.Kindmappe;
 
@@ -13,9 +15,14 @@ public interface KindMapper {
 
 	KindMapper INSTANCE = Mappers.getMapper(KindMapper.class);
 
-	@Mapping(target = "id", expression = "java(new de.muenchen.rbs.kitafinderdatenservice.domain.ExportId(km.getId(), exportId))")
-	@Mapping(target = "timestamp", expression = "java(java.time.LocalDateTime.now())")
-	@Mapping(target = "kindAkten", expression = "java(km.getKindAkten().toString())")
-	Kind kindmappeToKind(Kindmappe km, @Context Integer exportId);
+	default Kind kindmappeToKind(Kindmappe km, @Context Integer exportId) {
+		Kind kind = new Kind();
+
+		kind.setId(new ExportId(km.getId(), exportId));
+		kind.setTimestamp(LocalDateTime.now());
+		kind.setKindAkten(km.getKindAkten().toString());
+
+		return kind;
+	}
 
 }

@@ -102,7 +102,7 @@ jobs:
         id: meta1
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ghcr.io/${{ github.repository }}-batch
           tags: |
             type=semver,pattern={{version}},value=${{ inputs.version }},enable=${{ github.event_name == 'workflow_dispatch' }}
 
@@ -111,8 +111,8 @@ jobs:
         with:
           context: ${{ env.MVN_SUBPROJECT_BATCH }}
           push: ${{ github.event.inputs.version != '' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta1.outputs.tags }}
+          labels: ${{ steps.meta1.outputs.labels }}
           
       - name: Extract metadata (tags, labels) for Docker (WEB)
         id: meta2
@@ -127,5 +127,5 @@ jobs:
         with:
           context: ${{ env.MVN_SUBPROJECT_WEB }}
           push: ${{ github.event.inputs.version != '' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta2.outputs.tags }}
+          labels: ${{ steps.meta2.outputs.labels }}

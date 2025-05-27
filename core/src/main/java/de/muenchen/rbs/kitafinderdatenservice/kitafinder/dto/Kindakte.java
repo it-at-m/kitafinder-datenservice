@@ -11,7 +11,7 @@ public class Kindakte {
 	private String nachname;
 	private String geburtsdatum;
 	private int geschlechtId;
-	private boolean pflegekind;
+	private Boolean pflegekind;
 	private int immunisierungMasernId;
 	private int wohnhaftBeiId;
 	private String familiensprache;
@@ -76,5 +76,4 @@ public class Kindakte {
 	private List<Gruppe> gruppen;
 	private List<Integration> integrationen;
 	private List<Kontingent> kontingente;
-
 }

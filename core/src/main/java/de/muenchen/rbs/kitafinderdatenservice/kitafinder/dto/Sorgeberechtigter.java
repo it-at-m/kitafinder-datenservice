@@ -17,13 +17,12 @@ public class Sorgeberechtigter {
 	private String telefon1;
 	private String telefon2;
 	private String email;
-	private boolean auslaendischeherkunft;
-	private boolean nichtDeutschsprachigeHerkunft;
-	private boolean alleinSorgeberechtigt;
-	private boolean alleinErziehend;
+	private Boolean auslaendischeherkunft;
+	private Boolean nichtDeutschsprachigeHerkunft;
+	private Boolean alleinErziehend;
 	private Boolean geplanteAufnahmeBerufstaetigkeit;
 	private String geplanteAufnahmeBerufstaetigkeitAb;
-	private boolean geplantAufnahmeAusbildung;
+	private Boolean geplantAufnahmeAusbildung;
 	private String geplantAufnahmeAusbildungAb;
 	private Boolean geplantAufnahmeStudium;
 	private String geplantAufnahmeStudiumAb;
