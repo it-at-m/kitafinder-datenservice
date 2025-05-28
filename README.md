@@ -14,7 +14,7 @@ What to adjust:
 
 # Under construction
 
-This project is currently being buildt and is not yet ready for use.
+This project is currently being built and is not yet ready for use.
 
 # Kitafinder-Datenservice
 
@@ -74,11 +74,9 @@ Don't forget to give the project a star! Thanks again!
 
 More about this in the [CODE_OF_CONDUCT](/CODE_OF_CONDUCT.md) file.
 
-
 ## License
 
 Distributed under the MIT License. See [LICENSE](LICENSE) file for more information.
-
 
 ## Contact
 
