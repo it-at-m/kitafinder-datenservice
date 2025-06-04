@@ -20,7 +20,8 @@ spring:
   config:
     activate:
       on-profile: test
-  flyway.clean-on-validation-error: true
+  flyway:
+    clean-disabled: false
   
   datasource:
     url: jdbc:tc:postgresql://localhost:5432/postgres
@@ -32,7 +33,8 @@ spring:
   config:
     activate:
       on-profile: local
-  flyway.clean-on-validation-error: true
+  flyway:
+    clean-disabled: false
 
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
