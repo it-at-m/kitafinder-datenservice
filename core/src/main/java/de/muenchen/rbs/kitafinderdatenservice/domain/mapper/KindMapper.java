@@ -1,13 +1,17 @@
 package de.muenchen.rbs.kitafinderdatenservice.domain.mapper;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import de.muenchen.rbs.kitafinderdatenservice.domain.Bewerbung;
 import de.muenchen.rbs.kitafinderdatenservice.domain.ExportId;
 import de.muenchen.rbs.kitafinderdatenservice.domain.Kind;
+import de.muenchen.rbs.kitafinderdatenservice.domain.Vertrag;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.Kindakte;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.Kindmappe;
 
@@ -21,15 +25,28 @@ public interface KindMapper {
 
 		kind.setId(new ExportId(km.getId(), exportId));
 		kind.setTimestamp(LocalDateTime.now());
-		kind.setKindAkten(km.getKindAkten().toString());
-		
+
 		// TODO
 		if (km.getKindAkten() != null && km.getKindAkten().size() > 0) {
 			Kindakte master = km.getKindAkten().getFirst();
-			
+
 			kind.setVorname(master.getVorname());
 			kind.setNachname(master.getNachname());
 			kind.setGeburtsdatum(master.getGeburtsdatum());
+
+			List<Bewerbung> bewerbungen = new ArrayList<>();
+			List<Vertrag> vertraege = new ArrayList<>();
+
+			for (Kindakte ka : km.getKindAkten()) {
+				if (ka.getStatusId() == 4 || ka.getStatusId() == 5) {
+					vertraege.add(new Vertrag(kind.getId().getExportId(), ka));
+				} else {
+					bewerbungen.add(new Bewerbung(kind.getId().getExportId(), ka));
+				}
+			}
+
+			kind.setBewerbungen(bewerbungen);
+			kind.setVertraege(vertraege);
 		}
 
 		return kind;

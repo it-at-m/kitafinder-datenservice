@@ -1,11 +1,14 @@
 package de.muenchen.rbs.kitafinderdatenservice.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,12 +21,16 @@ public class Kind {
 	private ExportId id;
 
 	private LocalDateTime timestamp;
-	
+
 	private String vorname;
 	private String nachname;
 	private String geburtsdatum;
 
-	private String kindAkten;
+	@OneToMany(mappedBy = "kind", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Bewerbung> bewerbungen;
+
+	@OneToMany(mappedBy = "kind", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Vertrag> vertraege;
 
 	@ManyToOne
 	@JoinColumn(name = "exportId", nullable = false, insertable = false, updatable = false)

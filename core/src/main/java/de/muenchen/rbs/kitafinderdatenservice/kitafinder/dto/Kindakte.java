@@ -1,11 +1,13 @@
 package de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto;
 
-import java.util.List;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.Data;
 
 @Data
+@Embeddable
 public class Kindakte {
+	@Column(name = "KINDAKTE_ID")
 	private int id;
 	private String vorname;
 	private String nachname;
@@ -66,14 +68,14 @@ public class Kindakte {
 	private int kitaId;
 	private String kitaName;
 	private String kitaKibigId;
-	private Sorgeberechtigter sorgeberechtigter1;
-	private Sorgeberechtigter sorgeberechtigter2;
-	private List<Integer> besondereLageIds;
-	private List<Integer> elternprioritaetsgruendeIds;
-	private List<Altersgruppe> altersgruppen;
-	private List<Vertrag> verträge;
-	private List<BringAbholzeit> bringAbholzeiten;
-	private List<Gruppe> gruppen;
-	private List<Integration> integrationen;
-	private List<Kontingent> kontingente;
+//	private Sorgeberechtigter sorgeberechtigter1;
+//	private Sorgeberechtigter sorgeberechtigter2;
+//	private List<Integer> besondereLageIds;
+//	private List<Integer> elternprioritaetsgruendeIds;
+//	private List<Altersgruppe> altersgruppen;
+//	private List<Vertrag> verträge;
+//	private List<BringAbholzeit> bringAbholzeiten;
+//	private List<Gruppe> gruppen;
+//	private List<Integration> integrationen;
+//	private List<Kontingent> kontingente;
 }
