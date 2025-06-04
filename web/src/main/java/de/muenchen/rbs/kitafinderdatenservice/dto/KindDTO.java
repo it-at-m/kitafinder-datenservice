@@ -9,5 +9,10 @@ public class KindDTO {
 	private Integer id;
 	private Integer exportId;
 	private LocalDateTime timestamp;
+	
+	private String vorname;
+	private String nachname;
+	private String geburtsdatum;
+	
 	private String kindAkten;
 }

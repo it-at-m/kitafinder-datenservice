@@ -8,6 +8,9 @@ spring:
   docker:
     compose:
       enabled: false
+  codec:
+    max-in-memory-size: 16MB
+
 
 app:
   kitafinder:
@@ -18,8 +21,6 @@ app:
     id-batch-size: 500
     data-batch-size: 50
     cleanup-age: 2
-    export:
-      schedule: 0 4 * * * * # 01.00 Uhr
 ---
 spring:
   config:

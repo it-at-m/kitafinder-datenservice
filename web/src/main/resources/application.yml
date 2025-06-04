@@ -32,10 +32,6 @@ spring:
     activate:
       on-profile: local
 
-  security.oauth2.resourceserver.jwt:
-    issuer-uri: https://your-auth-server.com/issuer
-    jwk-set-uri: https://your-auth-server.com/.well-known/jwks.json
-
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
     username: admin

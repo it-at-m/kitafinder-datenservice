@@ -18,6 +18,10 @@ public class Kind {
 	private ExportId id;
 
 	private LocalDateTime timestamp;
+	
+	private String vorname;
+	private String nachname;
+	private String geburtsdatum;
 
 	private String kindAkten;
 

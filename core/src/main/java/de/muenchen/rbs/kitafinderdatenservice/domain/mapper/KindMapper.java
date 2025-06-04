@@ -8,6 +8,7 @@ import org.mapstruct.factory.Mappers;
 
 import de.muenchen.rbs.kitafinderdatenservice.domain.ExportId;
 import de.muenchen.rbs.kitafinderdatenservice.domain.Kind;
+import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.Kindakte;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.Kindmappe;
 
 @Mapper
@@ -21,6 +22,15 @@ public interface KindMapper {
 		kind.setId(new ExportId(km.getId(), exportId));
 		kind.setTimestamp(LocalDateTime.now());
 		kind.setKindAkten(km.getKindAkten().toString());
+		
+		// TODO
+		if (km.getKindAkten() != null && km.getKindAkten().size() > 0) {
+			Kindakte master = km.getKindAkten().getFirst();
+			
+			kind.setVorname(master.getVorname());
+			kind.setNachname(master.getNachname());
+			kind.setGeburtsdatum(master.getGeburtsdatum());
+		}
 
 		return kind;
 	}
