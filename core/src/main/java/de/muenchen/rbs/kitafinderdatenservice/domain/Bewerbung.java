@@ -3,7 +3,6 @@ package de.muenchen.rbs.kitafinderdatenservice.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.Kindakte;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -34,9 +33,9 @@ public class Bewerbung {
 
 	@JsonUnwrapped
 	@Embedded
-	private Kindakte daten;
+	private KindDatenstand daten;
 
-	public Bewerbung(Kind reference, Kindakte daten) {
+	public Bewerbung(Kind reference, KindDatenstand daten) {
 		super();
 		this.id = new ExportId(daten.getId(), reference.getId().getExportId());
 		this.kind = reference;

@@ -1,11 +1,18 @@
-package de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto;
+package de.muenchen.rbs.kitafinderdatenservice.domain;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonAlias;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class Kindakte {
+@Embeddable
+@NoArgsConstructor
+public class KindDatenstand {
+	@JsonAlias("kindakteId")
+	@Column(name = "KINDAKTE_ID")
 	private int id;
 	private String vorname;
 	private String nachname;
@@ -19,7 +26,7 @@ public class Kindakte {
 	private Boolean koerperlicheBehinderung;
 	private Boolean geistigeBehinderung;
 	private Boolean seelischeBehinderung;
-	private int statusId;
+	private KindakteStatus status;
 	private String statusDatum;
 	private String statusGrund;
 	private Integer absagegrundId;
@@ -66,14 +73,14 @@ public class Kindakte {
 	private int kitaId;
 	private String kitaName;
 	private String kitaKibigId;
-	private Sorgeberechtigter sorgeberechtigter1;
-	private Sorgeberechtigter sorgeberechtigter2;
-	private List<Integer> besondereLageIds;
-	private List<Integer> elternprioritaetsgruendeIds;
-	private List<Altersgruppe> altersgruppen;
-	private List<Vertrag> verträge;
-	private List<BringAbholzeit> bringAbholzeiten;
-	private List<Gruppe> gruppen;
-	private List<Integration> integrationen;
-	private List<Kontingent> kontingente;
+//	private Sorgeberechtigter sorgeberechtigter1;
+//	private Sorgeberechtigter sorgeberechtigter2;
+//	private List<Integer> besondereLageIds;
+//	private List<Integer> elternprioritaetsgruendeIds;
+//	private List<Altersgruppe> altersgruppen;
+//	private List<Vertrag> verträge;
+//	private List<BringAbholzeit> bringAbholzeiten;
+//	private List<Gruppe> gruppen;
+//	private List<Integration> integrationen;
+//	private List<Kontingent> kontingente;
 }

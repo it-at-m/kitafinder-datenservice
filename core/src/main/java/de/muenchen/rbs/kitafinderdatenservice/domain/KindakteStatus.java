@@ -1,0 +1,5 @@
+package de.muenchen.rbs.kitafinderdatenservice.domain;
+
+public enum KindakteStatus {
+	ABSAGE, WARTELISTE, ZUSAGE, VORGEMERKT, VERTRAG, VERTRAG_GEKUENDIGT, ZUSAGE_DURCH_ELTERN, IN_PRUEFUNG, NICHT_FREIGESCHALTET, VERWORFEN, UNBEKANNT; 
+}

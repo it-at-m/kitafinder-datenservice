@@ -2,6 +2,7 @@ package de.muenchen.rbs.kitafinderdatenservice.domain;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.EmbeddedId;
@@ -22,9 +23,7 @@ public class Kind {
 
 	private LocalDateTime timestamp;
 
-	private String vorname;
-	private String nachname;
-	private String geburtsdatum;
+	private Integer masterkindId;
 
 	@OneToMany(mappedBy = "kind", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Bewerbung> bewerbungen;
@@ -35,5 +34,12 @@ public class Kind {
 	@ManyToOne
 	@JoinColumn(name = "exportId", nullable = false, insertable = false, updatable = false)
 	private ExportRun exportRun;
+
+	public KindDatenstand getMasterkind() {
+		KindDatenstand masterkind = Stream
+				.concat(bewerbungen.stream().map(Bewerbung::getDaten), vertraege.stream().map(Vertrag::getDaten))
+				.filter(ka -> ka.getId() == this.getMasterkindId()).findAny().orElse(null);
+		return masterkind;
+	}
 
 }
