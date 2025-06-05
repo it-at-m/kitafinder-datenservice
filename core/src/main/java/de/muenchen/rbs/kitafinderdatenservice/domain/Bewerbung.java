@@ -1,5 +1,8 @@
 package de.muenchen.rbs.kitafinderdatenservice.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.Kindakte;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
@@ -8,27 +11,35 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
 @NoArgsConstructor
 public class Bewerbung {
 
+	@JsonIgnore
 	@EmbeddedId
 	private ExportId id;
 
 	@ManyToOne
-	@JoinColumns({ @JoinColumn(name = "kindId", referencedColumnName = "id", insertable = false, updatable = false),
-			@JoinColumn(name = "exportId", referencedColumnName = "exportId", insertable = false, updatable = false) })
+	@ToString.Exclude
+	@EqualsAndHashCode.Exclude
+	@JsonIgnore
+	@JoinColumns({ @JoinColumn(name = "kindId", referencedColumnName = "id"),
+			@JoinColumn(name = "kindExportId", referencedColumnName = "exportId") })
 	private Kind kind;
 
+	@JsonUnwrapped
 	@Embedded
 	private Kindakte daten;
 
-	public Bewerbung(Integer exportId, Kindakte daten) {
+	public Bewerbung(Kind reference, Kindakte daten) {
 		super();
-		this.id = new ExportId(daten.getId(), exportId);
+		this.id = new ExportId(daten.getId(), reference.getId().getExportId());
+		this.kind = reference;
 		this.daten = daten;
 	}
 

@@ -39,9 +39,9 @@ public interface KindMapper {
 
 			for (Kindakte ka : km.getKindAkten()) {
 				if (ka.getStatusId() == 4 || ka.getStatusId() == 5) {
-					vertraege.add(new Vertrag(kind.getId().getExportId(), ka));
+					vertraege.add(new Vertrag(kind, ka));
 				} else {
-					bewerbungen.add(new Bewerbung(kind.getId().getExportId(), ka));
+					bewerbungen.add(new Bewerbung(kind, ka));
 				}
 			}
 

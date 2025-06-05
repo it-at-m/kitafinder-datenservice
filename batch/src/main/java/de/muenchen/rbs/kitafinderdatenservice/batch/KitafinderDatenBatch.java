@@ -91,7 +91,7 @@ public class KitafinderDatenBatch {
 			for (Kind kind : mappedData) {
 				this.createEvents(kind);
 			}
-
+			
 			repository.saveAll(mappedData);
 			errorRepository.saveAll(nonParsable);
 
