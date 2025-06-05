@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,19 +19,24 @@ public class KindDatenstand {
 	private String vorname;
 	private String nachname;
 	private String geburtsdatum;
-	private int geschlechtId;
+	@Enumerated(EnumType.STRING)
+	private Geschlecht geschlecht;
 	private Boolean pflegekind;
-	private int immunisierungMasernId;
-	private int wohnhaftBeiId;
+	@Enumerated(EnumType.STRING)
+	private ImmunisierungMasern immunisierungMasern;
+	@Enumerated(EnumType.STRING)
+	private WohnhaftBei wohnhaftBei;
 	private String familiensprache;
 	private String weitereFamiliensprachen;
 	private Boolean koerperlicheBehinderung;
 	private Boolean geistigeBehinderung;
 	private Boolean seelischeBehinderung;
+	@Enumerated(EnumType.STRING)
 	private KindakteStatus status;
 	private String statusDatum;
 	private String statusGrund;
-	private Integer absagegrundId;
+	@Enumerated(EnumType.STRING)
+	private Absagegrund absagegrund;
 	private String externeId;
 	private String exportdatum;
 	private String kibigId;
@@ -38,8 +45,10 @@ public class KindDatenstand {
 	private String erstvorstellung;
 	private boolean persoenlichVorgestellt;
 	private String betreuungswunschAb;
-	private int betreuungswunschZeitId;
-	private int betreuungsformId;
+	@Enumerated(EnumType.STRING)
+	private Betreuungszeit betreuungswunschZeit;
+	@Enumerated(EnumType.STRING)
+	private Betreuungsform betreuungsform;
 	private Integer prioWarteliste;
 	private int platzartId;
 	private String anmeldecode;
@@ -69,7 +78,8 @@ public class KindDatenstand {
 	private String ausflugsfoerderungVon;
 	private String ausflugsfoerderungBis;
 	private String butId;
-	private int butVerwendungszweckId;
+	@Enumerated(EnumType.STRING)
+	private ButVerwedungszweck butVerwendungszweck;
 	private int kitaId;
 	private String kitaName;
 	private String kitaKibigId;
