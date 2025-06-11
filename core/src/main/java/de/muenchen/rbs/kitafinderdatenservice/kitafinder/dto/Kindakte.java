@@ -71,7 +71,7 @@ public class Kindakte {
 	private List<Integer> besondereLageIds;
 	private List<Integer> elternprioritaetsgruendeIds;
 	private List<Altersgruppe> altersgruppen;
-	private List<Vertrag> verträge;
+	private List<Vertragsabschnitt> verträge;
 	private List<BringAbholzeit> bringAbholzeiten;
 	private List<Gruppe> gruppen;
 	private List<Integration> integrationen;

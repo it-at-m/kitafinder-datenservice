@@ -13,7 +13,6 @@ import de.muenchen.rbs.kitafinderdatenservice.domain.Bewerbung;
 import de.muenchen.rbs.kitafinderdatenservice.domain.ExportId;
 import de.muenchen.rbs.kitafinderdatenservice.domain.Kind;
 import de.muenchen.rbs.kitafinderdatenservice.domain.KindDatenstand;
-import de.muenchen.rbs.kitafinderdatenservice.domain.KindDatenstandKategorie;
 import de.muenchen.rbs.kitafinderdatenservice.domain.Vertrag;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.Kindakte;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.Kindmappe;
@@ -37,12 +36,12 @@ public interface KindMapper {
 			List<Vertrag> vertraege = new ArrayList<>();
 
 			for (Kindakte ka : km.getKindAkten()) {
-				KindDatenstand stand = this.kindakteToKindDatenstand(ka);
+				KindDatenstand stand = this.kindakteToKindDatenstand(ka, exportId, kind);
 
-				if (stand.getStatus().getKategorie() == KindDatenstandKategorie.VERTRAG) {
-					vertraege.add(new Vertrag(kind, stand));
-				} else {
-					bewerbungen.add(new Bewerbung(kind, stand));
+				if (stand instanceof Vertrag v) {
+					vertraege.add(v);
+				} else if (stand instanceof Bewerbung b) {
+					bewerbungen.add(b);
 				}
 			}
 
@@ -53,6 +52,7 @@ public interface KindMapper {
 		return kind;
 	}
 
+	@Mapping(target = "id", expression = "java(new de.muenchen.rbs.kitafinderdatenservice.domain.ExportId(kindakte.getId(), exportId))")
 	@Mapping(target = "status", expression = "java(de.muenchen.rbs.kitafinderdatenservice.domain.KindakteStatus.getFromKitafinderId(kindakte.getStatusId()))")
 	@Mapping(target = "geschlecht", source = "geschlechtId")
 	@Mapping(target = "immunisierungMasern", source = "immunisierungMasernId")
@@ -61,6 +61,27 @@ public interface KindMapper {
 	@Mapping(target = "betreuungsform", source = "betreuungsformId")
 	@Mapping(target = "absagegrund", source = "absagegrundId")
 	@Mapping(target = "butVerwendungszweck", source = "butVerwendungszweckId")
-	KindDatenstand kindakteToKindDatenstand(Kindakte kindakte);
+	@Mapping(target = "kind", expression = "java(kind)")
+	Bewerbung kindakteToBewerbung(Kindakte kindakte, @Context Integer exportId, @Context Kind kind);
+
+	@Mapping(target = "id", expression = "java(new de.muenchen.rbs.kitafinderdatenservice.domain.ExportId(kindakte.getId(), exportId))")
+	@Mapping(target = "status", expression = "java(de.muenchen.rbs.kitafinderdatenservice.domain.KindakteStatus.getFromKitafinderId(kindakte.getStatusId()))")
+	@Mapping(target = "geschlecht", source = "geschlechtId")
+	@Mapping(target = "immunisierungMasern", source = "immunisierungMasernId")
+	@Mapping(target = "wohnhaftBei", source = "wohnhaftBeiId")
+	@Mapping(target = "betreuungswunschZeit", source = "betreuungswunschZeitId")
+	@Mapping(target = "betreuungsform", source = "betreuungsformId")
+	@Mapping(target = "absagegrund", source = "absagegrundId")
+	@Mapping(target = "butVerwendungszweck", source = "butVerwendungszweckId")
+	@Mapping(target = "kind", expression = "java(kind)")
+	Vertrag kindakteToVertrag(Kindakte kindakte, @Context Integer exportId, @Context Kind kind);
+
+	default KindDatenstand kindakteToKindDatenstand(Kindakte kindakte, @Context Integer exportId, @Context Kind kind) {
+		if (kindakte.getStatusId() == 4 || kindakte.getStatusId() == 5) {
+			return kindakteToVertrag(kindakte, exportId, kind);
+		} else {
+			return kindakteToBewerbung(kindakte, exportId, kind);
+		}
+	}
 
 }

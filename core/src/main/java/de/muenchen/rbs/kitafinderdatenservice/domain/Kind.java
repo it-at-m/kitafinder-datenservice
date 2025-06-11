@@ -37,8 +37,9 @@ public class Kind {
 
 	public KindDatenstand getMasterkind() {
 		KindDatenstand masterkind = Stream
-				.concat(bewerbungen.stream().map(Bewerbung::getDaten), vertraege.stream().map(Vertrag::getDaten))
-				.filter(ka -> ka.getId() == this.getMasterkindId()).findAny().orElse(null);
+				.concat(bewerbungen.stream().map(b -> (KindDatenstand) b),
+						vertraege.stream().map(v -> (KindDatenstand) v))
+				.filter(k -> k.getId().getId().equals(this.getMasterkindId())).findAny().orElse(null);
 		return masterkind;
 	}
 

@@ -1,8 +1,10 @@
 package de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto;
 
+import jakarta.persistence.Embeddable;
 import lombok.Data;
 
 @Data
+@Embeddable
 public class Sorgeberechtigter {
 	private int id;
 	private String anrede;
