@@ -52,7 +52,7 @@ public interface KindMapper {
 		return kind;
 	}
 
-	@Mapping(target = "id", expression = "java(new de.muenchen.rbs.kitafinderdatenservice.domain.ExportId(kindakte.getId(), exportId))")
+	@Mapping(target = "exportId", expression = "java(exportId)")
 	@Mapping(target = "status", expression = "java(de.muenchen.rbs.kitafinderdatenservice.domain.KindakteStatus.getFromKitafinderId(kindakte.getStatusId()))")
 	@Mapping(target = "geschlecht", source = "geschlechtId")
 	@Mapping(target = "immunisierungMasern", source = "immunisierungMasernId")
@@ -64,7 +64,7 @@ public interface KindMapper {
 	@Mapping(target = "kind", expression = "java(kind)")
 	Bewerbung kindakteToBewerbung(KindakteDTO kindakte, @Context Integer exportId, @Context Kind kind);
 
-	@Mapping(target = "id", expression = "java(new de.muenchen.rbs.kitafinderdatenservice.domain.ExportId(kindakte.getId(), exportId))")
+	@Mapping(target = "exportId", expression = "java(exportId)")
 	@Mapping(target = "status", expression = "java(de.muenchen.rbs.kitafinderdatenservice.domain.KindakteStatus.getFromKitafinderId(kindakte.getStatusId()))")
 	@Mapping(target = "geschlecht", source = "geschlechtId")
 	@Mapping(target = "immunisierungMasern", source = "immunisierungMasernId")
