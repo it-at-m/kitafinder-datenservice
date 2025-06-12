@@ -16,7 +16,7 @@ import de.muenchen.rbs.kitafinderdatenservice.domain.KindmappeId;
 import de.muenchen.rbs.kitafinderdatenservice.domain.mapper.ExportErrorMapper;
 import de.muenchen.rbs.kitafinderdatenservice.domain.mapper.KindMapper;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.adapter.KitafinderExportService;
-import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderExport;
+import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderExportDTO;
 import de.muenchen.rbs.kitafinderdatenservice.repository.ExportErrorRepository;
 import de.muenchen.rbs.kitafinderdatenservice.repository.KindRepository;
 import de.muenchen.rbs.kitafinderdatenservice.repository.KindmappeIdRepository;
@@ -65,7 +65,7 @@ public class KitafinderDatenBatch {
 			List<KindmappeId> ids = idRepository.findAll(page).getContent();
 
 			// Load kitafinder data
-			KitafinderExport data = service.loadKitafinderData(ids.stream().map(kmid -> kmid.getId()).toList());
+			KitafinderExportDTO data = service.loadKitafinderData(ids.stream().map(kmid -> kmid.getId()).toList());
 
 			// parse/create errors
 			List<ExportError> nonParsable = new ArrayList<>();
@@ -91,7 +91,7 @@ public class KitafinderDatenBatch {
 			for (Kind kind : mappedData) {
 				this.createEvents(kind);
 			}
-			
+
 			repository.saveAll(mappedData);
 			errorRepository.saveAll(nonParsable);
 

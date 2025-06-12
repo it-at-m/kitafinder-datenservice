@@ -3,7 +3,7 @@ package de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto;
 import lombok.Data;
 
 @Data
-public class ErmittlungsDauer {
+public class ErmittlungsDauerDTO {
 	private int gesamt;
 	private int akten;
 	private int besondereLage;

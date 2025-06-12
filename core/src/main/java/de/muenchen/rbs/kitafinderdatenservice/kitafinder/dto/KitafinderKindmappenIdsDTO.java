@@ -7,6 +7,6 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class KitafinderKindmappenIds extends KitafinderResponse {
+public class KitafinderKindmappenIdsDTO extends KitafinderResponseDTO {
 	private Collection<Integer> kindMappenIds;
 }

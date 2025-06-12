@@ -3,7 +3,7 @@ package de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto;
 import lombok.Data;
 
 @Data
-public class Gruppe {
+public class GruppeDTO {
     private int zuordnungId;
     private int gruppeId;
     private String ab;

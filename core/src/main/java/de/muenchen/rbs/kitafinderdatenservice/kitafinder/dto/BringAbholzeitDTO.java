@@ -3,7 +3,7 @@ package de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto;
 import lombok.Data;
 
 @Data
-public class BringAbholzeit {
+public class BringAbholzeitDTO {
 	private int id;
 	private String gueltigAb;
 	private Long bringzeitMontag;

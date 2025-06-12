@@ -19,9 +19,9 @@ import org.springframework.web.reactive.function.client.WebClientRequestExceptio
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriBuilder;
 
-import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderExport;
-import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderKindmappenIds;
-import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderResponse;
+import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderExportDTO;
+import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderKindmappenIdsDTO;
+import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -68,7 +68,7 @@ public class KitafinderExportService {
 	}
 
 	@Retryable(maxAttemptsExpression = "#{@retryMaxAttempts}", retryFor = { KitafinderExportException.class })
-	public <T extends KitafinderResponse> T kitafinderGetRequest(Class<T> returnType, Function<UriBuilder, URI> uri)
+	public <T extends KitafinderResponseDTO> T kitafinderGetRequest(Class<T> returnType, Function<UriBuilder, URI> uri)
 			throws KitafinderExportException {
 		try {
 			ResponseEntity<T> response = this.webClient.get().uri(uri).accept(MediaType.APPLICATION_JSON)
@@ -91,13 +91,13 @@ public class KitafinderExportService {
 		}
 	}
 
-	public KitafinderExport loadKitafinderData(Collection<Integer> kindMappenIds) {
-		return this.kitafinderGetRequest(KitafinderExport.class,
+	public KitafinderExportDTO loadKitafinderData(Collection<Integer> kindMappenIds) {
+		return this.kitafinderGetRequest(KitafinderExportDTO.class,
 				uriBuilder -> uriBuilder.path("/rbs/kindmappen").queryParam("kindMappenIds", kindMappenIds).build());
 	}
 
 	public Collection<Integer> loadKitafinderKindmappenIds(int chunkSize, int offset) {
-		KitafinderKindmappenIds ids = this.kitafinderGetRequest(KitafinderKindmappenIds.class, uriBuilder -> uriBuilder
+		KitafinderKindmappenIdsDTO ids = this.kitafinderGetRequest(KitafinderKindmappenIdsDTO.class, uriBuilder -> uriBuilder
 				.path("/rbs/kindmappenids").queryParam("offset", offset).queryParam("fetch", chunkSize).build());
 
 		return ids.getKindMappenIds();

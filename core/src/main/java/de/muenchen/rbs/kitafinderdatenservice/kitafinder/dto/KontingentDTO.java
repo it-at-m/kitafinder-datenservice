@@ -3,8 +3,9 @@ package de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto;
 import lombok.Data;
 
 @Data
-public class Altersgruppe {
+public class KontingentDTO {
 	private int id;
-	private String gueltigVon;
-	private String gueltigBis;
+	private String von;
+	private String bis;
+	private String bemerkung;
 }

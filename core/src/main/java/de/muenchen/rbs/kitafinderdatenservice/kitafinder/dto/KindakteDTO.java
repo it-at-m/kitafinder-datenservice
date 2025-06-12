@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class Kindakte {
+public class KindakteDTO {
 	private int id;
 	private String vorname;
 	private String nachname;
@@ -66,14 +66,14 @@ public class Kindakte {
 	private int kitaId;
 	private String kitaName;
 	private String kitaKibigId;
-	private Sorgeberechtigter sorgeberechtigter1;
-	private Sorgeberechtigter sorgeberechtigter2;
+	private SorgeberechtigterDTO sorgeberechtigter1;
+	private SorgeberechtigterDTO sorgeberechtigter2;
 	private List<Integer> besondereLageIds;
 	private List<Integer> elternprioritaetsgruendeIds;
-	private List<Altersgruppe> altersgruppen;
-	private List<Vertragsabschnitt> verträge;
-	private List<BringAbholzeit> bringAbholzeiten;
-	private List<Gruppe> gruppen;
-	private List<Integration> integrationen;
-	private List<Kontingent> kontingente;
+	private List<AltersgruppeDTO> altersgruppen;
+	private List<VertragsabschnittDTO> verträge;
+	private List<BringAbholzeitDTO> bringAbholzeiten;
+	private List<GruppeDTO> gruppen;
+	private List<IntegrationDTO> integrationen;
+	private List<KontingentDTO> kontingente;
 }

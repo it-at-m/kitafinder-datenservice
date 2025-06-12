@@ -3,7 +3,7 @@ package de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto;
 import lombok.Data;
 
 @Data
-public class Vertragsabschnitt {
+public class VertragsabschnittDTO {
 	private int id;
 	private String ab;
 	private String bis;

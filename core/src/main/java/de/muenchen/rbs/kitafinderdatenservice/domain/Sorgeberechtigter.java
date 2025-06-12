@@ -1,12 +1,33 @@
-package de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto;
+package de.muenchen.rbs.kitafinderdatenservice.domain;
 
-import jakarta.persistence.Embeddable;
+import java.util.Collection;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
-@Embeddable
+@Entity
+@Table(name = "SORGEBERECHTIGTER")
 public class Sorgeberechtigter {
-	private int id;
+	@Id
+	private Integer id;
+	@Id
+	private Integer exportId;
+
+	@ToString.Exclude
+	@EqualsAndHashCode.Exclude
+	@JsonIgnore
+	@OneToMany(mappedBy = "sorgeberechtigter1", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Collection<KindDatenstand> kinddaten;
+
 	private String anrede;
 	private String titel;
 	private String vorname;

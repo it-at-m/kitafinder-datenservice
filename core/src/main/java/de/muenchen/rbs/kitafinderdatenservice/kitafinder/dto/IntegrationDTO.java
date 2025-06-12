@@ -3,7 +3,7 @@ package de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto;
 import lombok.Data;
 
 @Data
-public class Integration {
+public class IntegrationDTO {
 	private int id;
 	private String gestellt;
 	private String abgelehnt;

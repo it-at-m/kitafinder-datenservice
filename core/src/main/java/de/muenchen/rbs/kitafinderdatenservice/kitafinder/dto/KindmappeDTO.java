@@ -5,9 +5,9 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class Kindmappe {
+public class KindmappeDTO {
 	private Integer id;
 	private boolean isGefunden;
-	private List<Kindakte> kindAkten;
-	private ErmittlungsDauer ermittlungsDauer;
+	private List<KindakteDTO> kindAkten;
+	private ErmittlungsDauerDTO ermittlungsDauer;
 }

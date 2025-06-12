@@ -5,8 +5,9 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -16,10 +17,14 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
+@IdClass(ExportId.class)
 public class Kind {
 
-	@EmbeddedId
-	private ExportId id;
+	@Id
+	private Integer id;
+
+	@Id
+	private Integer exportId;
 
 	private LocalDateTime timestamp;
 
@@ -39,8 +44,12 @@ public class Kind {
 		KindDatenstand masterkind = Stream
 				.concat(bewerbungen.stream().map(b -> (KindDatenstand) b),
 						vertraege.stream().map(v -> (KindDatenstand) v))
-				.filter(k -> k.getId().getId().equals(this.getMasterkindId())).findAny().orElse(null);
+				.filter(k -> k.getId().equals(this.getMasterkindId())).findAny().orElse(null);
 		return masterkind;
+	}
+
+	public ExportId getFullId() {
+		return new ExportId(getId(), getExportId());
 	}
 
 }
