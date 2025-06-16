@@ -4,7 +4,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import de.muenchen.rbs.kitafinderdatenservice.domain.Bewerbung;
 import de.muenchen.rbs.kitafinderdatenservice.domain.ExportRun;
@@ -14,9 +15,9 @@ import de.muenchen.rbs.kitafinderdatenservice.domain.Sorgeberechtigter;
 import de.muenchen.rbs.kitafinderdatenservice.repository.ExportRunRepository;
 import de.muenchen.rbs.kitafinderdatenservice.repository.KindRepository;
 
-//@ActiveProfiles("test")
-@SpringBootTest
-class KitafinderWebApplicationTest {
+@ActiveProfiles("test")
+@DataJpaTest
+class KitafinderWebRepositoryTest {
 
 	@Autowired
 	private ExportRunRepository exportRepository;
@@ -24,7 +25,7 @@ class KitafinderWebApplicationTest {
 	private KindRepository repository;
 
 	@Test
-	void contextLoads() {
+	void canSaveKindWithDependantObjects() {
 		ExportRun run = new ExportRun();
 		run.setStatus(ExportStatus.SUCCESS);
 		exportRepository.save(run);
@@ -41,7 +42,7 @@ class KitafinderWebApplicationTest {
 		sb.setId(2000);
 		sb.setExportId(run.getId());
 		b.setSorgeberechtigter1(sb);
-		
+
 		k.setBewerbungen(List.of(b));
 		b.setKind(k);
 
