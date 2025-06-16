@@ -3,7 +3,6 @@ package de.muenchen.rbs.kitafinderdatenservice.domain;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -42,13 +41,11 @@ public class Kind {
 	private ExportRun exportRun;
 
 	public KindDatenstand getMasterkind() {
-		KindDatenstand masterkind = Stream
-				.concat(bewerbungen.stream().map(b -> (KindDatenstand) b),
-						vertraege.stream().map(v -> (KindDatenstand) v))
-				.filter(k -> k.getId().equals(this.getMasterkindId())).findAny().orElse(null);
+		KindDatenstand masterkind = getKinddaten().stream().filter(k -> k.getId().equals(this.getMasterkindId()))
+				.findAny().orElse(null);
 		return masterkind;
 	}
-	
+
 	public List<KindDatenstand> getKinddaten() {
 		List<KindDatenstand> kinddaten = new ArrayList<>();
 		if (getBewerbungen() != null) {

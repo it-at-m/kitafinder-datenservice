@@ -2,9 +2,6 @@ package de.muenchen.rbs.kitafinderdatenservice.domain;
 
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.JdbcType;
-import org.hibernate.dialect.PostgreSQLEnumJdbcType;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -33,6 +30,5 @@ public class ExportRun {
 	private LocalDateTime endTime;
 
 	@Enumerated(EnumType.STRING)
-	@JdbcType(PostgreSQLEnumJdbcType.class)
 	private ExportStatus status;
 }

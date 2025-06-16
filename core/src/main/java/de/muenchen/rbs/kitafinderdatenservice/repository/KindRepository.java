@@ -1,6 +1,5 @@
 package de.muenchen.rbs.kitafinderdatenservice.repository;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -22,7 +21,7 @@ public interface KindRepository extends PagingAndSortingRepository<Kind, ExportI
 	Page<Kind> findAllMostRecent(Pageable page);
 
 	@Modifying
-	@Query(value = "DELETE FROM KIND K WHERE K.TIMESTAMP < :ageThreshold AND (ID, TIMESTAMP) NOT IN (SELECT ID, TIMESTAMP FROM KIND_AKTUELL KA)", nativeQuery = true)
-	int deleteOldRows(LocalDateTime ageThreshold);
+	@Query(value = "DELETE FROM Kind K WHERE K.exportId = :exportId")
+	int deleteByExportId(Integer exportId);
 
 }

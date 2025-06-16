@@ -13,6 +13,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
@@ -28,6 +29,7 @@ import lombok.ToString;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "KINDDATEN")
 @NoArgsConstructor
+@IdClass(ExportId.class)
 public class KindDatenstand {
 
 	@Id
