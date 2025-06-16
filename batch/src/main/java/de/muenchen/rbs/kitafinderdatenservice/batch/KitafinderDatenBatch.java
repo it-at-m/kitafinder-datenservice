@@ -107,7 +107,7 @@ public class KitafinderDatenBatch {
 	private void createEvents(Kind newKind) {
 		// TODO: generate events
 		// TODO: consider batching the retrieval of old data
-		Optional<Kind> oldKind = repository.findMostRecentById(newKind.getId().getId());
+		Optional<Kind> oldKind = repository.findMostRecentById(newKind.getId());
 
 		if (oldKind.isEmpty()) {
 			// TODO: kind created event

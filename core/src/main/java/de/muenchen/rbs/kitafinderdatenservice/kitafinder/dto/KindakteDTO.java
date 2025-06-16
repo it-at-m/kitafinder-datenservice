@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class KindakteDTO {
 	private int id;
+	private boolean masterkind;
 	private String vorname;
 	private String nachname;
 	private String geburtsdatum;

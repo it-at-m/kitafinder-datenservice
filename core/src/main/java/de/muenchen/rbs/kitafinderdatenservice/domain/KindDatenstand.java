@@ -83,7 +83,8 @@ public class KindDatenstand {
 	@Enumerated(EnumType.STRING)
 	private Betreuungsform betreuungsform;
 	private Integer prioWarteliste;
-	private int platzartId;
+	@Enumerated(EnumType.STRING)
+	private Platzart platzart;
 	private String anmeldecode;
 	private boolean integrativplatzGewuenscht;
 	private boolean platzsharingGewuenscht;
@@ -127,7 +128,7 @@ public class KindDatenstand {
 		this.sorgeberechtigter1 = sb;
 		this.setSb1_id(sb.getId());
 	}
-	
+
 	private Integer sb2_id;
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "sb2_id", referencedColumnName = "id", insertable = false, updatable = false)

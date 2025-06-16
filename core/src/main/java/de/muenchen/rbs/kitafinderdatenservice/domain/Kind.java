@@ -1,6 +1,7 @@
 package de.muenchen.rbs.kitafinderdatenservice.domain;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -46,6 +47,17 @@ public class Kind {
 						vertraege.stream().map(v -> (KindDatenstand) v))
 				.filter(k -> k.getId().equals(this.getMasterkindId())).findAny().orElse(null);
 		return masterkind;
+	}
+	
+	public List<KindDatenstand> getKinddaten() {
+		List<KindDatenstand> kinddaten = new ArrayList<>();
+		if (getBewerbungen() != null) {
+			kinddaten.addAll(getBewerbungen());
+		}
+		if (getVertraege() != null) {
+			kinddaten.addAll(getVertraege());
+		}
+		return kinddaten;
 	}
 
 	public ExportId getFullId() {
