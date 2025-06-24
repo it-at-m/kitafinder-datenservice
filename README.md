@@ -34,26 +34,22 @@ The documentation project is built with technologies we use in our projects:
 * PostgreSQL
 * Flyway
 
-## Roadmap
-
-*if you have a ROADMAP for your project add this here*
-
-
-See the [open issues](#) for a full list of proposed features (and known issues).
-
-
 ## Set up
-*how can i start and fly this project*
+
+To start and test kitafinder-datenservice, you can simply download and run one of the [pre-built packages](https://github.com/orgs/it-at-m/packages?repo_name=kitafinder-datenservice). 
+
+* kitafinder-datenservice-batch tries to connect to a kitafinder instance, queries it's data and persist it in the configured DB for further use.
+* kitafinder-datenservice-web provides REST-endpoints serving the stored data.
 
 ## Documentation
 *what insights do you have to tell*
 
 ```mermaid
 graph TD;
-    A-->B;
-    A-->C;
-    B-->D;
-    C-->D;
+    batch-job-->DB;
+    DB-->web-application;
+    web-application-->Users;
+    web-application-->other applications;
 ```
 
 use [diagrams](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams).

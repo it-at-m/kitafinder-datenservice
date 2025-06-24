@@ -13,10 +13,13 @@ import org.springframework.stereotype.Component;
 import de.muenchen.rbs.kitafinderdatenservice.domain.ExportError;
 import de.muenchen.rbs.kitafinderdatenservice.domain.Kind;
 import de.muenchen.rbs.kitafinderdatenservice.domain.KindmappeId;
+import de.muenchen.rbs.kitafinderdatenservice.domain.events.KindCreatedEvent;
+import de.muenchen.rbs.kitafinderdatenservice.domain.events.KinddatenEvent;
 import de.muenchen.rbs.kitafinderdatenservice.domain.mapper.ExportErrorMapper;
 import de.muenchen.rbs.kitafinderdatenservice.domain.mapper.KindMapper;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.adapter.KitafinderExportService;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderExportDTO;
+import de.muenchen.rbs.kitafinderdatenservice.repository.EventRepository;
 import de.muenchen.rbs.kitafinderdatenservice.repository.ExportErrorRepository;
 import de.muenchen.rbs.kitafinderdatenservice.repository.KindRepository;
 import de.muenchen.rbs.kitafinderdatenservice.repository.KindmappeIdRepository;
@@ -31,6 +34,7 @@ public class KitafinderDatenBatch {
 	private KindmappeIdRepository idRepository;
 	private KindRepository repository;
 	private ExportErrorRepository errorRepository;
+	private EventRepository eventRepository;
 
 	private KindMapper mapper = KindMapper.INSTANCE;
 	private ExportErrorMapper errorMapper = ExportErrorMapper.INSTANCE;
@@ -38,12 +42,13 @@ public class KitafinderDatenBatch {
 	private final int batchSize;
 
 	public KitafinderDatenBatch(KitafinderExportService service, KindRepository repository,
-			ExportErrorRepository errorRepository, KindmappeIdRepository idRepository,
+			ExportErrorRepository errorRepository, KindmappeIdRepository idRepository, EventRepository eventRepository,
 			@Value("${app.kitafinder.data-batch-size:10}") int batchSize) {
 		this.service = service;
 		this.repository = repository;
 		this.errorRepository = errorRepository;
 		this.idRepository = idRepository;
+		this.eventRepository = eventRepository;
 
 		this.batchSize = batchSize;
 	}
@@ -58,6 +63,7 @@ public class KitafinderDatenBatch {
 
 		int successCount = 0;
 		int errorCount = 0;
+		int eventCount = 0;
 
 		// Start loading data in batches
 		for (int i = 0; i < numberOfIds; i += batchSize) {
@@ -87,31 +93,41 @@ public class KitafinderDatenBatch {
 			successCount += mappedData.size();
 			errorCount += nonParsable.size();
 
+			List<KinddatenEvent> events = new ArrayList<>();
+
 			// generate events
 			for (Kind kind : mappedData) {
-				this.createEvents(kind);
+				events.addAll(this.createEvents(kind));
+				eventCount += events.size();
 			}
 
 			repository.saveAll(mappedData);
 			errorRepository.saveAll(nonParsable);
+			eventRepository.saveAll(events);
 
 			// Next page for next request
 			page = page.next();
 		}
 
 		Duration duration = Duration.between(exportStart, LocalDateTime.now());
-		log.info("Kitafinder data export completed. Duration: {}, number of rows: {}, number of errors: {}",
-				duration.toString(), successCount, errorCount);
+		log.info(
+				"Kitafinder data export completed. Duration: {}, number of rows: {}, number of errors: {}, number of events: {}",
+				duration.toString(), successCount, errorCount, eventCount);
 	}
 
-	private void createEvents(Kind newKind) {
+	private List<KinddatenEvent> createEvents(Kind newKind) {
+		List<KinddatenEvent> events = new ArrayList<>();
+
 		// TODO: generate events
 		// TODO: consider batching the retrieval of old data
 		Optional<Kind> oldKind = repository.findMostRecentById(newKind.getId());
 
 		if (oldKind.isEmpty()) {
-			// TODO: kind created event
+			KindCreatedEvent event = new KindCreatedEvent(newKind, LocalDateTime.now());
+			events.add(event);
 		}
+
+		return events;
 	}
 
 }
