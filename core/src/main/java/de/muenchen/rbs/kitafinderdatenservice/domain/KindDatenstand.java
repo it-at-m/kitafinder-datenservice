@@ -2,6 +2,8 @@ package de.muenchen.rbs.kitafinderdatenservice.domain;
 
 import java.util.List;
 
+import org.hibernate.annotations.Cascade;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -42,6 +44,7 @@ public class KindDatenstand {
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
 	@JsonIgnore
+	@Cascade(org.hibernate.annotations.CascadeType.ALL)
 	@JoinColumn(name = "kindId", referencedColumnName = "id", insertable = false, updatable = false)
 	@JoinColumn(name = "exportId", referencedColumnName = "exportId", insertable = false, updatable = false)
 	private Kind kind;

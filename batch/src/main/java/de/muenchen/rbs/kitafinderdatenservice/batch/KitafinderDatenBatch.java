@@ -98,8 +98,8 @@ public class KitafinderDatenBatch {
 			// generate events
 			for (Kind kind : mappedData) {
 				events.addAll(this.createEvents(kind));
-				eventCount += events.size();
 			}
+			eventCount += events.size();
 
 			repository.saveAll(mappedData);
 			errorRepository.saveAll(nonParsable);
@@ -125,6 +125,9 @@ public class KitafinderDatenBatch {
 		if (oldKind.isEmpty()) {
 			KindCreatedEvent event = new KindCreatedEvent(newKind, LocalDateTime.now());
 			events.add(event);
+		} else {
+			// TODO: Neue Verträge/Bewerbungen
+			// ...
 		}
 
 		return events;

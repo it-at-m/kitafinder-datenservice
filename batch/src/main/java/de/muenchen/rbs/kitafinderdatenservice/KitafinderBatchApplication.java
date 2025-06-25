@@ -34,13 +34,12 @@ public class KitafinderBatchApplication implements CommandLineRunner {
 	private KitafinderCleanupBatch cleanupBatch;
 	@Autowired
 	private ExportRunRepository exportRunRepository;
-	
+
 	@Autowired
-    private ApplicationContext context;
-	
+	private ApplicationContext context;
+
 	@Value("${app.auto-close:true}")
 	private boolean autoClose;
-	
 
 	public static void main(String[] args) {
 		SpringApplication.run(KitafinderBatchApplication.class, args);
