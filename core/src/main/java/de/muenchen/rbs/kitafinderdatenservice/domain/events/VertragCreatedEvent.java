@@ -1,6 +1,6 @@
 package de.muenchen.rbs.kitafinderdatenservice.domain.events;
 
-import de.muenchen.rbs.kitafinderdatenservice.domain.Kind;
+import de.muenchen.rbs.kitafinderdatenservice.domain.Vertrag;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -13,12 +13,12 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@DiscriminatorValue("KIND_CREATED")
-public class KindCreatedEvent extends KinddatenEvent {
+@DiscriminatorValue("VERTRAG_CREATED")
+public class VertragCreatedEvent extends KinddatenEvent {
 
 	@ManyToOne
-	@JoinColumn(name = "kindId", referencedColumnName = "id")
-	@JoinColumn(name = "exportId", referencedColumnName = "exportId")
-	private Kind kind;
+	@JoinColumn(name = "vertragId", referencedColumnName = "id")
+	@JoinColumn(name = "exportId", referencedColumnName = "EXPORT_ID")
+	private Vertrag kind;
 
 }

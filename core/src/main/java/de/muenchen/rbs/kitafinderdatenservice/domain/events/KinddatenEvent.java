@@ -13,12 +13,10 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @Table(name = "EVENT")
-@NoArgsConstructor
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TYPE")
@@ -29,5 +27,10 @@ public class KinddatenEvent {
 	@SequenceGenerator(name = "EVENT_ID_SEQUENCE_GENERATOR", sequenceName = "EVENT_ID_SEQUENCE", allocationSize = 1)
 	private Integer id;
 	private LocalDateTime timestamp;
+
+	public KinddatenEvent() {
+		super();
+		this.timestamp = LocalDateTime.now();
+	}
 
 }

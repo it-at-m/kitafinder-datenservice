@@ -6,6 +6,7 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
@@ -30,11 +31,11 @@ public class Kind {
 
 	private Integer masterkindId;
 
-	@OneToMany(mappedBy = "kind", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Bewerbung> bewerbungen;
+	@OneToMany(mappedBy = "kind", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	private List<Bewerbung> bewerbungen = new ArrayList<>();
 
-	@OneToMany(mappedBy = "kind", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Vertrag> vertraege;
+	@OneToMany(mappedBy = "kind", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	private List<Vertrag> vertraege = new ArrayList<>();
 
 	@ManyToOne
 	@JoinColumn(name = "exportId", nullable = false, insertable = false, updatable = false)

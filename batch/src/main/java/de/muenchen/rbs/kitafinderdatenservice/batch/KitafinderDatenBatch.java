@@ -15,6 +15,7 @@ import de.muenchen.rbs.kitafinderdatenservice.domain.Kind;
 import de.muenchen.rbs.kitafinderdatenservice.domain.KindmappeId;
 import de.muenchen.rbs.kitafinderdatenservice.domain.events.KindCreatedEvent;
 import de.muenchen.rbs.kitafinderdatenservice.domain.events.KinddatenEvent;
+import de.muenchen.rbs.kitafinderdatenservice.domain.events.VertragCreatedEvent;
 import de.muenchen.rbs.kitafinderdatenservice.domain.mapper.ExportErrorMapper;
 import de.muenchen.rbs.kitafinderdatenservice.domain.mapper.KindMapper;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.adapter.KitafinderExportService;
@@ -123,11 +124,11 @@ public class KitafinderDatenBatch {
 		Optional<Kind> oldKind = repository.findMostRecentById(newKind.getId());
 
 		if (oldKind.isEmpty()) {
-			KindCreatedEvent event = new KindCreatedEvent(newKind, LocalDateTime.now());
-			events.add(event);
+			events.add(new KindCreatedEvent(newKind));
 		} else {
-			// TODO: Neue Verträge/Bewerbungen
-			// ...
+			newKind.getVertraege().stream().filter(
+					newV -> oldKind.get().getVertraege().stream().noneMatch(old -> old.getId().equals(newV.getId())))
+					.forEach(newV -> events.add(new VertragCreatedEvent(newV)));
 		}
 
 		return events;
