@@ -1,5 +1,7 @@
 package de.muenchen.rbs.kitafinderdatenservice;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -26,6 +28,7 @@ class KitafinderWebRepositoryTest {
 
 	@Test
 	void canSaveKindWithDependantObjects() {
+		// Kind mit allen abhängigen Objekten anlegen
 		ExportRun run = new ExportRun();
 		run.setStatus(ExportStatus.SUCCESS);
 		exportRepository.save(run);
@@ -47,6 +50,12 @@ class KitafinderWebRepositoryTest {
 		b.setKind(k);
 
 		repository.save(k);
+
+		assertThat(repository.findById(k.getFullId())).isPresent();
+
+		repository.delete(k);
+
+		assertThat(repository.findById(k.getFullId())).isEmpty();
 	}
 
 }

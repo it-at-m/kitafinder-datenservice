@@ -6,6 +6,7 @@ import org.hibernate.annotations.Cascade;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.AltersgruppeDTO;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -157,7 +158,10 @@ public class KindDatenstand {
 	@Column(name = "ELTERNPRIORITAETSGRUND_ID")
 	private List<Integer> elternprioritaetsgruendeIds;
 
-//	private List<Altersgruppe> altersgruppen;
+	@ElementCollection(targetClass = AltersgruppeDTO.class, fetch = FetchType.EAGER)
+	@CollectionTable(name = "ALTERSGRUPPEN", joinColumns = { @JoinColumn(name = "kinddatenId"),
+			@JoinColumn(name = "exportId") })
+	private List<AltersgruppeDTO> altersgruppen;
 //	private List<Vertrag> verträge;
 //	private List<BringAbholzeit> bringAbholzeiten;
 //	private List<Gruppe> gruppen;

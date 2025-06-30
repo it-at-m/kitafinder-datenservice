@@ -13,17 +13,15 @@ import org.springframework.stereotype.Component;
 import de.muenchen.rbs.kitafinderdatenservice.domain.ExportError;
 import de.muenchen.rbs.kitafinderdatenservice.domain.Kind;
 import de.muenchen.rbs.kitafinderdatenservice.domain.KindmappeId;
-import de.muenchen.rbs.kitafinderdatenservice.domain.events.KindCreatedEvent;
-import de.muenchen.rbs.kitafinderdatenservice.domain.events.KinddatenEvent;
-import de.muenchen.rbs.kitafinderdatenservice.domain.events.VertragCreatedEvent;
+import de.muenchen.rbs.kitafinderdatenservice.domain.events.Outboxevent;
 import de.muenchen.rbs.kitafinderdatenservice.domain.mapper.ExportErrorMapper;
 import de.muenchen.rbs.kitafinderdatenservice.domain.mapper.KindMapper;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.adapter.KitafinderExportService;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderExportDTO;
-import de.muenchen.rbs.kitafinderdatenservice.repository.EventRepository;
 import de.muenchen.rbs.kitafinderdatenservice.repository.ExportErrorRepository;
 import de.muenchen.rbs.kitafinderdatenservice.repository.KindRepository;
 import de.muenchen.rbs.kitafinderdatenservice.repository.KindmappeIdRepository;
+import de.muenchen.rbs.kitafinderdatenservice.service.OutboxeventService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -35,7 +33,7 @@ public class KitafinderDatenBatch {
 	private KindmappeIdRepository idRepository;
 	private KindRepository repository;
 	private ExportErrorRepository errorRepository;
-	private EventRepository eventRepository;
+	private OutboxeventService outboxeventService;
 
 	private KindMapper mapper = KindMapper.INSTANCE;
 	private ExportErrorMapper errorMapper = ExportErrorMapper.INSTANCE;
@@ -43,13 +41,13 @@ public class KitafinderDatenBatch {
 	private final int batchSize;
 
 	public KitafinderDatenBatch(KitafinderExportService service, KindRepository repository,
-			ExportErrorRepository errorRepository, KindmappeIdRepository idRepository, EventRepository eventRepository,
-			@Value("${app.kitafinder.data-batch-size:10}") int batchSize) {
+			ExportErrorRepository errorRepository, KindmappeIdRepository idRepository,
+			OutboxeventService outboxeventService, @Value("${app.kitafinder.data-batch-size:10}") int batchSize) {
 		this.service = service;
 		this.repository = repository;
 		this.errorRepository = errorRepository;
 		this.idRepository = idRepository;
-		this.eventRepository = eventRepository;
+		this.outboxeventService = outboxeventService;
 
 		this.batchSize = batchSize;
 	}
@@ -94,7 +92,7 @@ public class KitafinderDatenBatch {
 			successCount += mappedData.size();
 			errorCount += nonParsable.size();
 
-			List<KinddatenEvent> events = new ArrayList<>();
+			List<Outboxevent> events = new ArrayList<>();
 
 			// generate events
 			for (Kind kind : mappedData) {
@@ -104,7 +102,7 @@ public class KitafinderDatenBatch {
 
 			repository.saveAll(mappedData);
 			errorRepository.saveAll(nonParsable);
-			eventRepository.saveAll(events);
+			outboxeventService.saveAll(events);
 
 			// Next page for next request
 			page = page.next();
@@ -116,19 +114,19 @@ public class KitafinderDatenBatch {
 				duration.toString(), successCount, errorCount, eventCount);
 	}
 
-	private List<KinddatenEvent> createEvents(Kind newKind) {
-		List<KinddatenEvent> events = new ArrayList<>();
+	private List<Outboxevent> createEvents(Kind newKind) {
+		List<Outboxevent> events = new ArrayList<>();
 
 		// TODO: generate events
 		// TODO: consider batching the retrieval of old data
 		Optional<Kind> oldKind = repository.findMostRecentById(newKind.getId());
 
 		if (oldKind.isEmpty()) {
-			events.add(new KindCreatedEvent(newKind));
+			events.add(outboxeventService.buildKindCreated(newKind));
 		} else {
 			newKind.getVertraege().stream().filter(
 					newV -> oldKind.get().getVertraege().stream().noneMatch(old -> old.getId().equals(newV.getId())))
-					.forEach(newV -> events.add(new VertragCreatedEvent(newV)));
+					.forEach(newV -> events.add(outboxeventService.buildNewVertrag(newV)));
 		}
 
 		return events;

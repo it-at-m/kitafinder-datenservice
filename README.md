@@ -54,6 +54,12 @@ graph TD;
 
 use [diagrams](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams).
 
+Domain-events are detected after exporting the kitafinder-data and persisted into an outbox.
+
+The outbox uses JSONB to store the full payload for events. This ensures we can retroactivaly check sent events, even after database schema changes.
+
+Our events are sent with their full payload, as opposed to links.
+
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
