@@ -1,17 +1,3 @@
-## Customize this file after creating the new REPO and remove this lines.
-What to adjust:  
-* Add the your project or repo name direct under the logo.
-* Add a short and long desciption.
-* Add links for your final repo to report a bug or request a feature.
-* Add list of used technologies.
-* If you have, add a roadmap or remove this section.
-* Fill up the section for set up and documentation.
- * Start in this file only with documentation and link to the docs folder.
-* Add more project shields. Use [shields.io](https://shields.io/) with style `for-the-badge`.
-
-## ------- end to remove -------
-<!-- add Project Logo, if existing -->
-
 # Under construction
 
 This project is currently being built and is not yet ready for use.
@@ -36,29 +22,36 @@ The documentation project is built with technologies we use in our projects:
 
 ## Set up
 
-To start and test kitafinder-datenservice, you can simply download and run one of the [pre-built packages](https://github.com/orgs/it-at-m/packages?repo_name=kitafinder-datenservice). 
+To start and test kitafinder-datenservice, you can simply download and run one of the [pre-built packages](https://github.com/orgs/it-at-m/packages?repo_name=kitafinder-datenservice).
 
 * kitafinder-datenservice-batch tries to connect to a kitafinder instance, queries it's data and persist it in the configured DB for further use.
 * kitafinder-datenservice-web provides REST-endpoints serving the stored data.
 
 ## Documentation
-*what insights do you have to tell*
 
-```mermaid
-graph TD;
-    batch-job-->DB;
-    DB-->web-application;
-    web-application-->Users;
-    web-application-->other applications;
-```
+### Data import/export
 
-use [diagrams](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams).
+The batch-module performs its loading process in 3 steps:
+
+1. Load all Kindmappen-IDs
+2. Load all Kindmappen and generate events
+3. Cleanup old data
+
+The configuration for the kitafinder connection is defined under 'app.kitafinder.*'.
+
+The first step is used to allow subsequent batching of calls made against netgos kitafinder. The IDs are persisted into the database. The ID-retrieval is batched and can be confugured using 'id-batch-size'.
+
+The second step is also batched with an independent batch size configured in 'data-batch-size'. Kindmappen are loaded, events calculated and both stored in the database batch by batch. For detecting newly occured events, the last saved state of each domain object is used for reference.
+
+In the third and last step old batch data is removed from the database as configured with 'cleanup-keep-age' and 'cleanup-keep-number'. Events are persisted forever and not affected by this step.
+
+### Events
 
 Domain-events are detected after exporting the kitafinder-data and persisted into an outbox.
 
 The outbox uses JSONB to store the full payload for events. This ensures we can retroactivaly check sent events, even after database schema changes.
 
-Our events are sent with their full payload, as opposed to links.
+Our events are sent with their full payload, as opposed to links. Proper handling of events is not yet implemented.
 
 ## Contributing
 

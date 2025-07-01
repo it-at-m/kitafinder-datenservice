@@ -15,6 +15,9 @@ app:
     token-url: ${app.security.sso-base-url}/auth/realms/${app.security.realm}/protocol/openid-connect/token
     issuer-url: ${app.security.sso-base-url}/auth/realms/${app.security.realm}
     client-id: kitafinder-datenservice
+  outbox:
+    polling:
+      enabled: true
 ---
 spring:
   config:

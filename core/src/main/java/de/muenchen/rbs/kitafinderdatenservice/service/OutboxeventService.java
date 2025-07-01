@@ -11,14 +11,14 @@ import de.muenchen.rbs.kitafinderdatenservice.domain.Kind;
 import de.muenchen.rbs.kitafinderdatenservice.domain.Vertrag;
 import de.muenchen.rbs.kitafinderdatenservice.domain.events.EventType;
 import de.muenchen.rbs.kitafinderdatenservice.domain.events.Outboxevent;
-import de.muenchen.rbs.kitafinderdatenservice.repository.OutboxEventRepository;
+import de.muenchen.rbs.kitafinderdatenservice.repository.OutboxeventRepository;
 import jakarta.validation.Valid;
 
 @Service
 public class OutboxeventService {
 
 	@Autowired
-	private OutboxEventRepository repository;
+	private OutboxeventRepository repository;
 
 	@Autowired
 	private ObjectMapper mapper;
