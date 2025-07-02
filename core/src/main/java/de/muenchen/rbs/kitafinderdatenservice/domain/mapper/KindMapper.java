@@ -16,7 +16,7 @@ import de.muenchen.rbs.kitafinderdatenservice.domain.Vertrag;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KindakteDTO;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KindmappeDTO;
 
-@Mapper
+@Mapper(uses = DateMapper.class)
 public interface KindMapper {
 
 	KindMapper INSTANCE = Mappers.getMapper(KindMapper.class);

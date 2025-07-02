@@ -1,13 +1,15 @@
-package de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto;
+package de.muenchen.rbs.kitafinderdatenservice.domain;
+
+import java.time.LocalDate;
 
 import jakarta.persistence.Embeddable;
 import lombok.Data;
 
 @Data
 @Embeddable
-public class BringAbholzeitDTO {
+public class BringAbholzeit {
 	private int id;
-	private String gueltigAb;
+	private LocalDate gueltigAb;
 	private Long bringzeitMontag;
 	private Long abholzeitMontag;
 	private Long bringzeitMontag2;

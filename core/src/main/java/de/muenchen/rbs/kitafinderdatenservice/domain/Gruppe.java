@@ -1,14 +1,16 @@
-package de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto;
+package de.muenchen.rbs.kitafinderdatenservice.domain;
+
+import java.time.LocalDate;
 
 import jakarta.persistence.Embeddable;
 import lombok.Data;
 
 @Data
 @Embeddable
-public class GruppeDTO {
+public class Gruppe {
     private int zuordnungId;
     private int gruppeId;
-    private String ab;
-    private String bis;
+    private LocalDate ab;
+    private LocalDate bis;
     private String gruppenname;
 }

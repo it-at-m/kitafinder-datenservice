@@ -1,14 +1,16 @@
-package de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto;
+package de.muenchen.rbs.kitafinderdatenservice.domain;
+
+import java.time.LocalDate;
 
 import jakarta.persistence.Embeddable;
 import lombok.Data;
 
 @Data
 @Embeddable
-public class VertragsabschnittDTO {
+public class Vertragsabschnitt {
 	private int id;
-	private String ab;
-	private String bis;
+	private LocalDate ab;
+	private LocalDate bis;
 	private int betreuungszeitId;
 	private int verpflegungId;
 	private Boolean koerperlicheBehinderung;

@@ -1,5 +1,6 @@
 package de.muenchen.rbs.kitafinderdatenservice.domain;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -44,16 +45,16 @@ public class Sorgeberechtigter {
 	private Boolean nichtDeutschsprachigeHerkunft;
 	private Boolean alleinErziehend;
 	private Boolean geplanteAufnahmeBerufstaetigkeit;
-	private String geplanteAufnahmeBerufstaetigkeitAb;
+	private LocalDate geplanteAufnahmeBerufstaetigkeitAb;
 	private Boolean geplantAufnahmeAusbildung;
-	private String geplantAufnahmeAusbildungAb;
+	private LocalDate geplantAufnahmeAusbildungAb;
 	private Boolean geplantAufnahmeStudium;
-	private String geplantAufnahmeStudiumAb;
+	private LocalDate geplantAufnahmeStudiumAb;
 	private Boolean berufstaetig;
 	private Boolean erstStudiumAusbildung;
 	private Double wochenarbeitszeit;
 	private Double wochenarbeitstage;
 	private Integer lageDerArbeitszeitId;
 	private Boolean arbeitsuchend;
-	private String arbeitsuchendSeit;
+	private LocalDate arbeitsuchendSeit;
 }

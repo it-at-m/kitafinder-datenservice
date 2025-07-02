@@ -1,12 +1,12 @@
 package de.muenchen.rbs.kitafinderdatenservice.domain;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.hibernate.annotations.Cascade;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.AltersgruppeDTO;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -72,18 +72,18 @@ public class KindDatenstand {
 	private Boolean seelischeBehinderung;
 	@Enumerated(EnumType.STRING)
 	private KindakteStatus status;
-	private String statusDatum;
+	private LocalDate statusDatum;
 	private String statusGrund;
 	@Enumerated(EnumType.STRING)
 	private Absagegrund absagegrund;
 	private String externeId;
-	private String exportdatum;
+	private LocalDate exportdatum;
 	private String kibigId;
-	private String anmeldedatum;
-	private String voranmeldungGueltigBis;
-	private String erstvorstellung;
+	private LocalDate anmeldedatum;
+	private LocalDate voranmeldungGueltigBis;
+	private LocalDate erstvorstellung;
 	private boolean persoenlichVorgestellt;
-	private String betreuungswunschAb;
+	private LocalDate betreuungswunschAb;
 	@Enumerated(EnumType.STRING)
 	private Betreuungszeit betreuungswunschZeit;
 	@Enumerated(EnumType.STRING)
@@ -102,21 +102,21 @@ public class KindDatenstand {
 	private Integer prioEltern;
 	private int schulbezirkId;
 	private int jahrgangsstufeId;
-	private String umzugInSchulbezirkZum;
+	private LocalDate umzugInSchulbezirkZum;
 	private boolean gastschulantragGestellt;
-	private String vertragsbeginn;
-	private String ersterBetreuungstag;
-	private String kuendigungsdatum;
-	private String vertragsende;
-	private String vertragsendeSpaetestens;
-	private String einschulungstermin;
+	private LocalDate vertragsbeginn;
+	private LocalDate ersterBetreuungstag;
+	private LocalDate kuendigungsdatum;
+	private LocalDate vertragsende;
+	private LocalDate vertragsendeSpaetestens;
+	private LocalDate einschulungstermin;
 	private boolean auswaertig;
 	private boolean umzugGeplant;
-	private String auswaertigSeit;
-	private String auswaertigBis;
+	private LocalDate auswaertigSeit;
+	private LocalDate auswaertigBis;
 	private boolean auswaertigGefoerdert;
-	private String ausflugsfoerderungVon;
-	private String ausflugsfoerderungBis;
+	private LocalDate ausflugsfoerderungVon;
+	private LocalDate ausflugsfoerderungBis;
 	private String butId;
 	@Enumerated(EnumType.STRING)
 	private ButVerwedungszweck butVerwendungszweck;
@@ -158,14 +158,29 @@ public class KindDatenstand {
 	@Column(name = "ELTERNPRIORITAETSGRUND_ID")
 	private List<Integer> elternprioritaetsgruendeIds;
 
-	@ElementCollection(targetClass = AltersgruppeDTO.class, fetch = FetchType.EAGER)
-	@CollectionTable(name = "ALTERSGRUPPEN", joinColumns = { @JoinColumn(name = "kinddatenId"),
+	@ElementCollection(targetClass = Altersgruppe.class, fetch = FetchType.EAGER)
+	@CollectionTable(name = "ALTERSGRUPPE", joinColumns = { @JoinColumn(name = "kinddatenId"),
 			@JoinColumn(name = "exportId") })
-	private List<AltersgruppeDTO> altersgruppen;
-//	private List<Vertrag> verträge;
-//	private List<BringAbholzeit> bringAbholzeiten;
-//	private List<Gruppe> gruppen;
-//	private List<Integration> integrationen;
-//	private List<Kontingent> kontingente;
+	private List<Altersgruppe> altersgruppen;
+
+	@ElementCollection(targetClass = BringAbholzeit.class, fetch = FetchType.EAGER)
+	@CollectionTable(name = "BRING_ABHOLZEIT", joinColumns = { @JoinColumn(name = "kinddatenId"),
+			@JoinColumn(name = "exportId") })
+	private List<BringAbholzeit> bringAbholzeiten;
+
+	@ElementCollection(targetClass = Gruppe.class, fetch = FetchType.EAGER)
+	@CollectionTable(name = "GRUPPE", joinColumns = { @JoinColumn(name = "kinddatenId"),
+			@JoinColumn(name = "exportId") })
+	private List<Gruppe> gruppen;
+
+	@ElementCollection(targetClass = Integration.class, fetch = FetchType.EAGER)
+	@CollectionTable(name = "INTEGRATION", joinColumns = { @JoinColumn(name = "kinddatenId"),
+			@JoinColumn(name = "exportId") })
+	private List<Integration> integrationen;
+
+	@ElementCollection(targetClass = Kontingent.class, fetch = FetchType.EAGER)
+	@CollectionTable(name = "KONTINGENT", joinColumns = { @JoinColumn(name = "kinddatenId"),
+			@JoinColumn(name = "exportId") })
+	private List<Kontingent> kontingente;
 
 }
