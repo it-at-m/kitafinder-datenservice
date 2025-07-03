@@ -1,31 +1,47 @@
 # Under construction
 
-This project is currently being built and is not yet ready for use.
+🚧 This project is currently being built and is not yet ready for use. 🚧
 
 # Kitafinder-Datenservice
 
 [![Made with love by it@M][made-with-love-shield]][itm-opensource]
 <!-- feel free to add more shields, style 'for-the-badge' -> see https://shields.io/badges -->
 
-This Application exports important data from Munichs kita finder + and makes it available for further use.
+This Application exports important data from Munichs ["kita finder +"](https://kitafinder.muenchen.de/elternportal/de/) and makes it available for further use.
 
-### Built With
+["kita finder +"](https://kitafinder.muenchen.de/elternportal/de/) is an instance of ["kita-planer"](https://kita-planer.de/) by netgo.
 
-The documentation project is built with technologies we use in our projects:
+## Built With
 
+This project is built by it@M in cooperation with [netgo](https://www.netgo.de/) based on the following technologies/frameworks:
+
+* Java
 * Spring Boot
 * Maven
 * Docker
-* Java
 * PostgreSQL
 * Flyway
+* ...
 
 ## Set up
 
-To start and test kitafinder-datenservice, you can simply download and run one of the [pre-built packages](https://github.com/orgs/it-at-m/packages?repo_name=kitafinder-datenservice).
+To start and test kitafinder-datenservice, you can simply download and run one of the [pre-built packages](https://github.com/orgs/it-at-m/packages?repo_name=kitafinder-datenservice). When running with Docker, first start the required infrastructure by running the [docker-compose.yml](web/stack/docker-compose.yml).
 
-* kitafinder-datenservice-batch tries to connect to a kitafinder instance, queries it's data and persist it in the configured DB for further use.
-* kitafinder-datenservice-web provides REST-endpoints serving the stored data.
+When running from source the default spring profile 'local' uses Docker to start required infrastructure. This includes a postgres-database and sso instance. The configuration can be viewed in [the stack directory](web/stack/).
+
+### kitafinder-datenservice-batch
+
+Tries to connect to a kita-planer instance, queries it's data and persist it in the configured DB for further use. Without configured a kita-planer instance this module does not work!
+
+The mimimum configuration to run this module are following properties:
+
+* app.kitafinder.base-url: API-URL of the kita-planer instance to connect to.
+* app.kitafinder.username: Username of the kita-planer API
+* app.kitafinder.password: Password of the kita-planer API
+
+### kitafinder-datenservice-web
+
+Provides REST-endpoints serving the stored data. A local deployment of this module doesn't require additional configuration.
 
 ## Documentation
 
@@ -33,13 +49,13 @@ To start and test kitafinder-datenservice, you can simply download and run one o
 
 The batch-module performs its loading process in 3 steps:
 
-1. Load all Kindmappen-IDs
-2. Load all Kindmappen and generate events
-3. Cleanup old data
+1. Load all Kindmappe ids
+2. Load all Kindmappe entities and generate events
+3. Clean up old data
 
-The configuration for the kitafinder connection is defined under 'app.kitafinder.*'.
+The configuration for the kita-planer connection is defined under 'app.kitafinder.*'.
 
-The first step is used to allow subsequent batching of calls made against netgos kitafinder. The IDs are persisted into the database. The ID-retrieval is batched and can be confugured using 'id-batch-size'.
+The first step is used to allow subsequent batching of calls made against netgos kita-planer. The IDs are persisted into the database. The ID-retrieval is batched and can be confugured using 'id-batch-size'.
 
 The second step is also batched with an independent batch size configured in 'data-batch-size'. Kindmappen are loaded, events calculated and both stored in the database batch by batch. For detecting newly occured events, the last saved state of each domain object is used for reference.
 
@@ -47,11 +63,17 @@ In the third and last step old batch data is removed from the database as config
 
 ### Events
 
-Domain-events are detected after exporting the kitafinder-data and persisted into an outbox.
+Domain-events are detected after exporting the kita-planer data and persisted into an outbox.
 
 The outbox uses JSONB to store the full payload for events. This ensures we can retroactivaly check sent events, even after database schema changes.
 
-Our events are sent with their full payload, as opposed to links. Proper handling of events is not yet implemented.
+🚧 *Handling of events part is not part of it@Ms initial scope and not yet implemented.* 🚧
+
+### Web-Service
+
+🚧 *This module is not part of it@Ms initial scope and only implemented rudimentarily.* 🚧
+
+The web-module provides a REST-service with endpoints to list and display child data. The OAuth2 security can be configured using the 'app.security' properties.
 
 ## Contributing
 
