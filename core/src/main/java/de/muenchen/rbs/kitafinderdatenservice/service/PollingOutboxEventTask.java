@@ -14,7 +14,7 @@ import org.springframework.util.StopWatch;
 
 import de.muenchen.rbs.kitafinderdatenservice.domain.events.OutboxState;
 import de.muenchen.rbs.kitafinderdatenservice.domain.events.Outboxevent;
-import de.muenchen.rbs.kitafinderdatenservice.repository.OutboxeventRepository;
+import de.muenchen.rbs.kitafinderdatenservice.repository.OutboxEventRepository;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -34,11 +34,11 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 public class PollingOutboxEventTask {
 
 	private int maxBatchSize;
-	private final OutboxeventRepository outboxRepo;
+	private final OutboxEventRepository outboxRepo;
 	private final OutboxEventHandlerDelegator outboxEventConsumer;
 
 	public PollingOutboxEventTask(@Value("${app.outbox.polling.max-batch-size:100}") int maxBatchSize,
-			OutboxeventRepository outboxRepo, OutboxEventHandlerDelegator outboxEventConsumer) {
+                                  OutboxEventRepository outboxRepo, OutboxEventHandlerDelegator outboxEventConsumer) {
 		super();
 		this.maxBatchSize = maxBatchSize;
 		this.outboxRepo = outboxRepo;
