@@ -45,14 +45,14 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          
-      - name: test
-        working-directory: ${{ env.MVN_PROJECT_ROOT }}
-        run: mvn test
         
       - name: build
         working-directory: ${{ env.MVN_PROJECT_ROOT }}
         run: mvn install
+          
+      - name: test
+        working-directory: ${{ env.MVN_PROJECT_ROOT }}
+        run: mvn test
         
       - name: Archive artifacts batch
         uses: actions/upload-artifact@v4
