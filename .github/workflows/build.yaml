@@ -48,7 +48,7 @@ jobs:
         
       - name: build
         working-directory: ${{ env.MVN_PROJECT_ROOT }}
-        run: mvn install
+        run: mvn clean install
           
       - name: test
         working-directory: ${{ env.MVN_PROJECT_ROOT }}
