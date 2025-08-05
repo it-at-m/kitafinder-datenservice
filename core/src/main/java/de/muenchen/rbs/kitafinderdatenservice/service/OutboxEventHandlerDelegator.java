@@ -18,7 +18,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Service, der {@link OutboxEvent}s konsumiert, an entsprechende Handler
+ * Service, der {@link Outboxevent}s konsumiert, an entsprechende Handler
  * weitergibt und den Status der Abarbeitung setzt.
  * 
  * @author michael.prankl
@@ -64,7 +64,7 @@ public class OutboxEventHandlerDelegator {
 	 * Konsumiert das übergebene Event und delegiert die eigentliche Arbeit an ein
 	 * passendes Delegates.
 	 * 
-	 * @param event ein {@link OutboxEvent}
+	 * @param event ein {@link Outboxevent}
 	 */
 	@Transactional
 	@Timed(value = "app_outbox_events_consume_time", description = "Verarbeitungszeit für die Verarbeitung eines Outbox Events")
