@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import de.muenchen.rbs.kitafinderdatenservice.domain.events.OutboxState;
 import de.muenchen.rbs.kitafinderdatenservice.domain.events.Outboxevent;
-import de.muenchen.rbs.kitafinderdatenservice.repository.OutboxeventRepository;
+import de.muenchen.rbs.kitafinderdatenservice.repository.OutboxEventRepository;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OutboxEventHandlerDelegator {
 
-	private final OutboxeventRepository outboxRepo;
+	private final OutboxEventRepository outboxRepo;
 	private final PluginRegistry<EventHandlerDelegate, Outboxevent> plugins;
 	private final int maxRetryCount;
 	private final Duration backoffDurationBase;
@@ -46,10 +46,10 @@ public class OutboxEventHandlerDelegator {
 	 * @param maxRetryCount       max retry count
 	 * @param backoffDurationBase Backoff Duration Basis (minimale Backoff Zeit)
 	 */
-	public OutboxEventHandlerDelegator(OutboxeventRepository outboxRepo,
-			PluginRegistry<EventHandlerDelegate, Outboxevent> plugins, MeterRegistry meterRegistry,
-			@Value("${app.outbox.retry.max-retries:0}") int maxRetryCount,
-			@Value("${app.outbox.retry.backoff-duration-base:PT30S}") Duration backoffDurationBase) {
+	public OutboxEventHandlerDelegator(OutboxEventRepository outboxRepo,
+									   PluginRegistry<EventHandlerDelegate, Outboxevent> plugins, MeterRegistry meterRegistry,
+									   @Value("${app.outbox.retry.max-retries:0}") int maxRetryCount,
+									   @Value("${app.outbox.retry.backoff-duration-base:PT30S}") Duration backoffDurationBase) {
 		this.outboxRepo = outboxRepo;
 		this.plugins = plugins;
 		this.maxRetryCount = maxRetryCount;

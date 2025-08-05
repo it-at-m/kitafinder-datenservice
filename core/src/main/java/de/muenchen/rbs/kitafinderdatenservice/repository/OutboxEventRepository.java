@@ -13,7 +13,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import de.muenchen.rbs.kitafinderdatenservice.domain.events.OutboxState;
 import de.muenchen.rbs.kitafinderdatenservice.domain.events.Outboxevent;
 
-public interface OutboxeventRepository
+public interface OutboxEventRepository
 		extends PagingAndSortingRepository<Outboxevent, UUID>, CrudRepository<Outboxevent, UUID> {
 
 	List<Outboxevent> findByAggregateId(Long aggregateId);
