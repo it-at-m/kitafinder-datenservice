@@ -65,6 +65,16 @@
 		<url>https://git.muenchen.de/km23/einrichtungsverwaltung/einrichtungsverwaltung/-/issues</url>
 	</issueManagement>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+			<version>1.18.36</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
 	<dependencyManagement>
 		<dependencies>
             <!-- Import dependency management from Spring Boot -->
@@ -77,6 +87,35 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>1.18.36</version>
+						</path>
+			            <path>
+			                <groupId>org.mapstruct</groupId>
+			                <artifactId>mapstruct-processor</artifactId>
+        					<version>${org.mapstruct.version}</version>
+			            </path>
+			            <!-- This is needed when using Lombok 1.8.16 and above -->
+					    <path>
+					        <groupId>org.projectlombok</groupId>
+					        <artifactId>lombok-mapstruct-binding</artifactId>
+					        <version>0.2.0</version>
+					    </path>
+			        </annotationProcessorPaths>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 	<developers>
 		<developer>
