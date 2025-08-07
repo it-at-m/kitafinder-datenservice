@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -22,7 +24,9 @@ import org.springframework.web.util.UriBuilder;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderExportDTO;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderKindmappenIdsDTO;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderResponseDTO;
+import io.netty.channel.ChannelOption;
 import lombok.extern.slf4j.Slf4j;
+import reactor.netty.http.client.HttpClient;
 
 @Slf4j
 @Service
@@ -64,7 +68,11 @@ public class KitafinderExportService {
 		log.info("Initializing KitafinderService with baseUrl={}, timeout={}s and maxAttempts={}", this.baseUrl,
 				this.timeoutSeconds, this.retryMaxAttempts);
 
-		this.webClient = webClientBuilder.baseUrl(this.baseUrl).build();
+		HttpClient httpClient = HttpClient.create().option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
+				Math.toIntExact(timeoutSeconds * 1000));
+
+		this.webClient = webClientBuilder.baseUrl(this.baseUrl)
+				.clientConnector(new ReactorClientHttpConnector(httpClient)).build();
 	}
 
 	@Retryable(maxAttemptsExpression = "#{@retryMaxAttempts}", retryFor = { KitafinderExportException.class })
@@ -92,13 +100,14 @@ public class KitafinderExportService {
 	}
 
 	public KitafinderExportDTO loadKitafinderData(Collection<Integer> kindMappenIds) {
-		return this.kitafinderGetRequest(KitafinderExportDTO.class,
-				uriBuilder -> uriBuilder.path("/rbs/kindmappen").queryParam("kindMappenIds", kindMappenIds).build());
+		return this.kitafinderGetRequest(KitafinderExportDTO.class, uriBuilder -> uriBuilder.path("/rbs/kindmappen")
+				.queryParam("kindMappenIds", kindMappenIds.stream().map(i -> i.toString()).collect(Collectors.joining(","))).build());
 	}
 
 	public Collection<Integer> loadKitafinderKindmappenIds(int chunkSize, int offset) {
-		KitafinderKindmappenIdsDTO ids = this.kitafinderGetRequest(KitafinderKindmappenIdsDTO.class, uriBuilder -> uriBuilder
-				.path("/rbs/kindmappenids").queryParam("offset", offset).queryParam("fetch", chunkSize).build());
+		KitafinderKindmappenIdsDTO ids = this.kitafinderGetRequest(KitafinderKindmappenIdsDTO.class,
+				uriBuilder -> uriBuilder.path("/rbs/kindmappenids").queryParam("offset", offset)
+						.queryParam("fetch", chunkSize).build());
 
 		return ids.getKindMappenIds();
 	}

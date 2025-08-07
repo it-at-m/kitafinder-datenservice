@@ -11,8 +11,8 @@ spring:
   codec:
     max-in-memory-size: 16MB
 
-
 app:
+  log-intervall-pages: 20 
   kitafinder:
     base-url: http://kitafinder-plan-k3.muenchen.de/kitaplaner/api
     username: # provide locally

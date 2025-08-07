@@ -21,13 +21,16 @@ public class KitafinderIdBatch {
 	private KindmappeIdRepository repository;
 
 	private final int batchSize;
+	private final int logIntervalPages;
 
 	public KitafinderIdBatch(KitafinderExportService service, KindmappeIdRepository repository,
-			@Value("${app.kitafinder.id-batch-size:100}") int batchSize) {
+			@Value("${app.kitafinder.id-batch-size:100}") int batchSize,
+			@Value("${app.log-interval-pages:10}") int logIntervalPages) {
 		this.service = service;
 		this.repository = repository;
 
 		this.batchSize = batchSize;
+		this.logIntervalPages = logIntervalPages;
 	}
 
 	public void loadKitafinderIds() {
@@ -38,6 +41,7 @@ public class KitafinderIdBatch {
 		repository.deleteAll();
 		int offset = 0;
 
+		log.info("Loading ids...");
 		// Lade Ids, bis eine Page nicht mehr voll ist.
 		Collection<Integer> newIds = null;
 		while (newIds == null || newIds.size() == batchSize) {
@@ -45,6 +49,10 @@ public class KitafinderIdBatch {
 			newIds = service.loadKitafinderKindmappenIds(batchSize, offset);
 			repository.saveAll(newIds.stream().map(id -> new KindmappeId(id)).toList());
 			offset += batchSize;
+			
+			if (offset/batchSize % logIntervalPages == logIntervalPages-1) {
+				log.info("Loaded {} kindmappen ids...", offset);
+			}
 		}
 
 		Duration duration = Duration.between(exportStart, LocalDateTime.now());

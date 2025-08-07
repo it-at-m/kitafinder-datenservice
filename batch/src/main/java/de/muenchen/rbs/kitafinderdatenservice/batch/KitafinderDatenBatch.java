@@ -1,5 +1,6 @@
 package de.muenchen.rbs.kitafinderdatenservice.batch;
 
+import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,10 +40,13 @@ public class KitafinderDatenBatch {
 	private ExportErrorMapper errorMapper = ExportErrorMapper.INSTANCE;
 
 	private final int batchSize;
+	private final int logIntervalPages;
+	private static final DecimalFormat percentFormat = new DecimalFormat("##.##%");
 
 	public KitafinderDatenBatch(KitafinderExportService service, KindRepository repository,
 			ExportErrorRepository errorRepository, KindmappeIdRepository idRepository,
-			OutboxeventService outboxeventService, @Value("${app.kitafinder.data-batch-size:10}") int batchSize) {
+			OutboxeventService outboxeventService, @Value("${app.kitafinder.data-batch-size:10}") int batchSize,
+			@Value("${app.log-interval-pages:10}") int logIntervalPages) {
 		this.service = service;
 		this.repository = repository;
 		this.errorRepository = errorRepository;
@@ -50,6 +54,7 @@ public class KitafinderDatenBatch {
 		this.outboxeventService = outboxeventService;
 
 		this.batchSize = batchSize;
+		this.logIntervalPages = logIntervalPages;
 	}
 
 	public void loadKitafinderData(Integer exportRunId) {
@@ -58,52 +63,65 @@ public class KitafinderDatenBatch {
 		log.info("Starting Kitafinder data export with batch-size {}...", batchSize);
 		long numberOfIds = idRepository.count();
 
-		Pageable page = Pageable.ofSize(batchSize).first();
-
 		int successCount = 0;
 		int errorCount = 0;
 		int eventCount = 0;
 
 		// Start loading data in batches
-		for (int i = 0; i < numberOfIds; i += batchSize) {
+		for (Pageable page = Pageable.ofSize(batchSize).first(); page.getOffset() < numberOfIds; page.next()) {
 			// Load Ids for this batch
 			List<KindmappeId> ids = idRepository.findAll(page).getContent();
 
-			// Load kitafinder data
-			KitafinderExportDTO data = service.loadKitafinderData(ids.stream().map(kmid -> kmid.getId()).toList());
+			// general errors
+			List<ExportError> errors = new ArrayList<>();
+			try {
+				// parse errors
+				List<ExportError> parseErrors = new ArrayList<>();
+				// Load kitafinder data
+				KitafinderExportDTO data = service.loadKitafinderData(ids.stream().map(kmid -> kmid.getId()).toList());
+				List<Kind> mappedData = data.getKindMappen().stream().map(kindmappe -> {
+					try {
+						return mapper.kindmappeToKind(kindmappe, exportRunId);
+					} catch (Exception e) {
+						log.error("Error on mapping kitafinder kindmappe.");
+						e.printStackTrace();
 
-			// parse/create errors
-			List<ExportError> nonParsable = new ArrayList<>();
-			List<Kind> mappedData = data.getKindMappen().stream().map(kindmappe -> {
-				try {
-					return mapper.kindmappeToKind(kindmappe, exportRunId);
-				} catch (Exception e) {
-					log.error("Error on mapping kitafinder kindmappe.");
-					e.printStackTrace();
+						ExportError error = errorMapper.kindmappeToExportError(kindmappe, exportRunId, e.getMessage());
+						error.setErrorMessage(e.getMessage());
 
-					ExportError error = errorMapper.kindmappeToExportError(kindmappe, exportRunId);
-					error.setErrorMessage(e.getMessage());
+						parseErrors.add(error);
+						return null;
+					}
+				}).filter(k -> k != null).toList();
 
-					nonParsable.add(error);
-					return null;
+				successCount += mappedData.size();
+				repository.saveAll(mappedData);
+
+				errors.addAll(parseErrors);
+
+				// generate events
+				List<Outboxevent> events = new ArrayList<>();
+				for (Kind kind : mappedData) {
+					events.addAll(this.createEvents(kind));
 				}
-			}).filter(k -> k != null).toList();
+				eventCount += events.size();
+				outboxeventService.saveAll(events);
 
-			successCount += mappedData.size();
-			errorCount += nonParsable.size();
+				if (page.getPageNumber() % logIntervalPages == logIntervalPages - 1) {
+					log.info("Exported kindmappen {} to {} of {}. {}...", page.getOffset(),
+							page.getOffset() + batchSize - 1, numberOfIds,
+							percentFormat.format(page.getOffset() * 1.0f / numberOfIds));
+				}
+			} catch (Exception e) {
+				log.error("Error on loading/saving kitafinder kindmappen page {}.", page.getPageNumber());
+				e.printStackTrace();
 
-			List<Outboxevent> events = new ArrayList<>();
-
-			// generate events
-			for (Kind kind : mappedData) {
-				events.addAll(this.createEvents(kind));
+				// skip full page
+				errors = ids.stream().map(id -> errorMapper.idToExportError(id, exportRunId, e.getMessage())).toList();
 			}
-			eventCount += events.size();
 
-			repository.saveAll(mappedData);
-			errorRepository.saveAll(nonParsable);
-			outboxeventService.saveAll(events);
-
+			errorCount += errors.size();
+			errorRepository.saveAll(errors);
 			// Next page for next request
 			page = page.next();
 		}
