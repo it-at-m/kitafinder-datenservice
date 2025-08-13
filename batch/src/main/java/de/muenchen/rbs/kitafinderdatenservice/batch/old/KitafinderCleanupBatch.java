@@ -1,4 +1,4 @@
-package de.muenchen.rbs.kitafinderdatenservice.batch;
+package de.muenchen.rbs.kitafinderdatenservice.batch.old;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

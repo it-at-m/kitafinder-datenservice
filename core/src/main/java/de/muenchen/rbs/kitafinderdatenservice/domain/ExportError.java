@@ -2,20 +2,18 @@ package de.muenchen.rbs.kitafinderdatenservice.domain;
 
 import java.time.LocalDateTime;
 
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @NoArgsConstructor
-public class ExportError {
-
-	@EmbeddedId
-	private ExportId id;
+@EqualsAndHashCode(callSuper = true)
+public class ExportError extends KindExportResult {
 
 	private LocalDateTime timestamp;
 

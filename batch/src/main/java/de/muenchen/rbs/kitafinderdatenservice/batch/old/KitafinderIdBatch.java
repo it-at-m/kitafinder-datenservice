@@ -1,4 +1,4 @@
-package de.muenchen.rbs.kitafinderdatenservice.batch;
+package de.muenchen.rbs.kitafinderdatenservice.batch.old;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -18,7 +18,7 @@ public class KitafinderIdBatch {
 
 	private KitafinderExportService service;
 
-	private KindmappeIdRepository repository;
+	private KindmappeIdRepository idRepository;
 
 	private final int batchSize;
 	private final int logIntervalPages;
@@ -27,7 +27,7 @@ public class KitafinderIdBatch {
 			@Value("${app.kitafinder.id-batch-size:100}") int batchSize,
 			@Value("${app.log-interval-pages:10}") int logIntervalPages) {
 		this.service = service;
-		this.repository = repository;
+		this.idRepository = repository;
 
 		this.batchSize = batchSize;
 		this.logIntervalPages = logIntervalPages;
@@ -38,7 +38,7 @@ public class KitafinderIdBatch {
 
 		log.info("Starting Kitafinder id export with batch-size {}...", batchSize);
 		log.info("Removing previous ids...");
-		repository.deleteAll();
+		idRepository.deleteAll();
 		int offset = 0;
 
 		log.info("Loading ids...");
@@ -47,9 +47,8 @@ public class KitafinderIdBatch {
 		while (newIds == null || newIds.size() == batchSize) {
 			log.debug("Requesting {} ids starting from {}...", batchSize, offset);
 			newIds = service.loadKitafinderKindmappenIds(batchSize, offset);
-			repository.saveAll(newIds.stream().map(id -> new KindmappeId(id)).toList());
+			idRepository.saveAll(newIds.stream().map(id -> new KindmappeId(id)).toList());
 			offset += batchSize;
-			
 			if (offset/batchSize % logIntervalPages == logIntervalPages-1) {
 				log.info("Loaded {} kindmappen ids...", offset);
 			}

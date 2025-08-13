@@ -24,6 +24,7 @@ import org.springframework.web.util.UriBuilder;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderExportDTO;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderKindmappenIdsDTO;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderResponseDTO;
+import de.muenchen.rbs.kitafinderdatenservice.service.WebClientMetricsLogger;
 import io.netty.channel.ChannelOption;
 import lombok.extern.slf4j.Slf4j;
 import reactor.netty.http.client.HttpClient;
@@ -57,6 +58,7 @@ public class KitafinderExportService {
 	public KitafinderExportService(@Value("${app.kitafinder.base-url}") String baseUrl,
 			@Value("${app.kitafinder.timeout-seconds:30}") long timeoutSeconds,
 			@Value("${app.kitafinder.retry-attempts:3}") int retryMaxAttempts, WebClient.Builder webClientBuilder,
+			WebClientMetricsLogger webClientMetricsLogger,
 			@Value("${app.kitafinder.username}") String kitafinderApiUsername,
 			@Value("${app.kitafinder.password}") String kitafinderApiPassword) {
 		this.baseUrl = baseUrl;
@@ -72,7 +74,7 @@ public class KitafinderExportService {
 				Math.toIntExact(timeoutSeconds * 1000));
 
 		this.webClient = webClientBuilder.baseUrl(this.baseUrl)
-				.clientConnector(new ReactorClientHttpConnector(httpClient)).build();
+				.clientConnector(new ReactorClientHttpConnector(httpClient)).filter(webClientMetricsLogger).build();
 	}
 
 	@Retryable(maxAttemptsExpression = "#{@retryMaxAttempts}", retryFor = { KitafinderExportException.class })
@@ -100,8 +102,11 @@ public class KitafinderExportService {
 	}
 
 	public KitafinderExportDTO loadKitafinderData(Collection<Integer> kindMappenIds) {
-		return this.kitafinderGetRequest(KitafinderExportDTO.class, uriBuilder -> uriBuilder.path("/rbs/kindmappen")
-				.queryParam("kindMappenIds", kindMappenIds.stream().map(i -> i.toString()).collect(Collectors.joining(","))).build());
+		return this.kitafinderGetRequest(KitafinderExportDTO.class,
+				uriBuilder -> uriBuilder.path("/rbs/kindmappen")
+						.queryParam("kindMappenIds",
+								kindMappenIds.stream().map(i -> i.toString()).collect(Collectors.joining(",")))
+						.build());
 	}
 
 	public Collection<Integer> loadKitafinderKindmappenIds(int chunkSize, int offset) {

@@ -7,25 +7,18 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @NoArgsConstructor
-@IdClass(ExportId.class)
-public class Kind {
-
-	@Id
-	private Integer id;
-
-	@Id
-	private Integer exportId;
+@EqualsAndHashCode(callSuper = true)
+public class Kind extends KindExportResult {
 
 	private LocalDateTime timestamp;
 
