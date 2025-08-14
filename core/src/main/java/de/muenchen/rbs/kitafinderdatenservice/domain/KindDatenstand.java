@@ -36,11 +36,11 @@ import lombok.ToString;
 public class KindDatenstand {
 
 	@Id
-	private Integer id;
+	private Long id;
 	@Id
-	private Integer exportId;
+	private Long exportId;
 
-	private Integer kindId;
+	private Long kindId;
 	@ManyToOne
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
@@ -88,7 +88,7 @@ public class KindDatenstand {
 	private Betreuungszeit betreuungswunschZeit;
 	@Enumerated(EnumType.STRING)
 	private Betreuungsform betreuungsform;
-	private Integer prioWarteliste;
+	private Long prioWarteliste;
 	@Enumerated(EnumType.STRING)
 	private Platzart platzart;
 	private String anmeldecode;
@@ -99,7 +99,7 @@ public class KindDatenstand {
 	private String bemerkungenZurBewerbung;
 	private boolean wechselkind;
 	private boolean wechselkindAngabeEltern;
-	private Integer prioEltern;
+	private Long prioEltern;
 	private int schulbezirkId;
 	private int jahrgangsstufeId;
 	private LocalDate umzugInSchulbezirkZum;
@@ -124,7 +124,7 @@ public class KindDatenstand {
 	private String kitaName;
 	private String kitaKibigId;
 
-	private Integer sb1_id;
+	private Long sb1_id;
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "sb1_id", referencedColumnName = "id", insertable = false, updatable = false)
 	@JoinColumn(name = "exportId", referencedColumnName = "exportId", insertable = false, updatable = false)
@@ -135,7 +135,7 @@ public class KindDatenstand {
 		this.setSb1_id(sb.getId());
 	}
 
-	private Integer sb2_id;
+	private Long sb2_id;
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "sb2_id", referencedColumnName = "id", insertable = false, updatable = false)
 	@JoinColumn(name = "exportId", referencedColumnName = "exportId", insertable = false, updatable = false)
@@ -146,17 +146,17 @@ public class KindDatenstand {
 		this.setSb2_id(sb.getId());
 	}
 
-	@ElementCollection(targetClass = Integer.class, fetch = FetchType.EAGER)
+	@ElementCollection(targetClass = Long.class, fetch = FetchType.EAGER)
 	@CollectionTable(name = "BESONDERE_LAGE", joinColumns = { @JoinColumn(name = "id"),
 			@JoinColumn(name = "exportId") })
 	@Column(name = "BESONDERE_LAGE_ID")
-	private List<Integer> besondereLageIds;
+	private List<Long> besondereLageIds;
 
-	@ElementCollection(targetClass = Integer.class, fetch = FetchType.EAGER)
+	@ElementCollection(targetClass = Long.class, fetch = FetchType.EAGER)
 	@CollectionTable(name = "ELTERNPRIORITAETSGRUND", joinColumns = { @JoinColumn(name = "id"),
 			@JoinColumn(name = "exportId") })
 	@Column(name = "ELTERNPRIORITAETSGRUND_ID")
-	private List<Integer> elternprioritaetsgruendeIds;
+	private List<Long> elternprioritaetsgruendeIds;
 
 	@ElementCollection(targetClass = Altersgruppe.class, fetch = FetchType.EAGER)
 	@CollectionTable(name = "ALTERSGRUPPE", joinColumns = { @JoinColumn(name = "kinddatenId"),

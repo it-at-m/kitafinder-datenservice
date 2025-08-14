@@ -17,11 +17,11 @@ public interface ExportErrorMapper {
 	@Mapping(target = "id", expression = "java(new de.muenchen.rbs.kitafinderdatenservice.domain.ExportId(km.getId(), exportId))")
 	@Mapping(target = "timestamp", expression = "java(java.time.LocalDateTime.now())")
 	@Mapping(target = "errorMessage", expression = "java(message)")
-	ExportError kindmappeToExportError(KindmappeDTO km, @Context Integer exportId, @Context String message);
+	ExportError kindmappeToExportError(KindmappeDTO km, @Context Long exportId, @Context String message);
 
 	@Mapping(target = "id", expression = "java(new de.muenchen.rbs.kitafinderdatenservice.domain.ExportId(id.getId(), exportId))")
 	@Mapping(target = "timestamp", expression = "java(java.time.LocalDateTime.now())")
 	@Mapping(target = "errorMessage", expression = "java(message)")
-	ExportError idToExportError(KindmappeId id, @Context Integer exportId, @Context String message);
+	ExportError idToExportError(KindmappeId id, @Context Long exportId, @Context String message);
 
 }

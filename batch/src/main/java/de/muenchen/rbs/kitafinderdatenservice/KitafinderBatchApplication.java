@@ -1,5 +1,7 @@
 package de.muenchen.rbs.kitafinderdatenservice;
 
+import java.time.LocalDateTime;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -11,6 +13,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.retry.annotation.EnableRetry;
 
+import de.muenchen.rbs.kitafinderdatenservice.domain.ExportRun;
+import de.muenchen.rbs.kitafinderdatenservice.domain.ExportStatus;
 import de.muenchen.rbs.kitafinderdatenservice.repository.ExportRunRepository;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,10 +28,10 @@ public class KitafinderBatchApplication implements CommandLineRunner {
 
 	@Autowired
 	private Job kitafinderJob;
-	
+
 	@Value("${app.export.id}")
-	private Integer exportRunId;
-	
+	private Long exportRunId;
+
 	@Autowired
 	private ExportRunRepository exportRunRepository;
 
@@ -38,15 +42,21 @@ public class KitafinderBatchApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		JobParameters jobParameters;
+		ExportRun exportRun = new ExportRun();
 		if (exportRunId != null) {
+			exportRun = exportRunRepository.findById(exportRunId).orElseThrow(
+					() -> new IllegalStateException("Trying to restart a previous ExportRun that cannot be found."));
+			log.info("Restarting previous run with id {}...", exportRunId);
+
 			// interpret first parameter as ID to use
-			jobParameters = new JobParametersBuilder()
-					.addLong("EXPORT_ID", Long.valueOf(exportRunId))
-					.toJobParameters();		
+			jobParameters = new JobParametersBuilder().addLong("EXPORT_ID", exportRunId).toJobParameters();
 		} else {
-			jobParameters = new JobParametersBuilder()
-					.addLong("EXPORT_ID", exportRunRepository.getNextId())
-					.toJobParameters();			
+			exportRun.setStartTime(LocalDateTime.now());
+			exportRun.setStatus(ExportStatus.RUNNING);
+			exportRunRepository.save(exportRun);
+			log.info("Starting new run with id {}...", exportRun.getId());
+
+			jobParameters = new JobParametersBuilder().addLong("EXPORT_ID", exportRun.getId()).toJobParameters();
 		}
 
 		jobLauncher.run(kitafinderJob, jobParameters);

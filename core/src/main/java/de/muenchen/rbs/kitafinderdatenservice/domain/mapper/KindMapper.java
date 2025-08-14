@@ -21,7 +21,7 @@ public interface KindMapper {
 
 	KindMapper INSTANCE = Mappers.getMapper(KindMapper.class);
 
-	default Kind kindmappeToKind(KindmappeDTO km, @Context Integer exportId) {
+	default Kind kindmappeToKind(KindmappeDTO km, @Context Long exportId) {
 		Kind kind = new Kind();
 
 		kind.setId(km.getId());
@@ -75,7 +75,7 @@ public interface KindMapper {
 	@Mapping(target = "butVerwendungszweck", source = "butVerwendungszweckId")
 	@Mapping(target = "platzart", source = "platzartId")
 	@Mapping(target = "kind", expression = "java(kind)")
-	Bewerbung kindakteToBewerbung(KindakteDTO kindakte, @Context Integer exportId, @Context Kind kind);
+	Bewerbung kindakteToBewerbung(KindakteDTO kindakte, @Context Long exportId, @Context Kind kind);
 
 	@Mapping(target = "exportId", expression = "java(exportId)")
 	@Mapping(target = "sorgeberechtigter1.exportId", expression = "java(exportId)")
@@ -90,9 +90,9 @@ public interface KindMapper {
 	@Mapping(target = "butVerwendungszweck", source = "butVerwendungszweckId")
 	@Mapping(target = "platzart", source = "platzartId")
 	@Mapping(target = "kind", expression = "java(kind)")
-	Vertrag kindakteToVertrag(KindakteDTO kindakte, @Context Integer exportId, @Context Kind kind);
+	Vertrag kindakteToVertrag(KindakteDTO kindakte, @Context Long exportId, @Context Kind kind);
 
-	default KindDatenstand kindakteToKindDatenstand(KindakteDTO kindakte, @Context Integer exportId,
+	default KindDatenstand kindakteToKindDatenstand(KindakteDTO kindakte, @Context Long exportId,
 			@Context Kind kind) {
 		if (kindakte.getStatusId() == 4 || kindakte.getStatusId() == 5) {
 			return kindakteToVertrag(kindakte, exportId, kind);

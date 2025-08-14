@@ -60,7 +60,7 @@ public class Outboxevent implements Serializable {
 	@Lob
 	private String errorMessage;
 
-	private Integer retryCount;
+	private Long retryCount;
 
 	private LocalDateTime retryNotBefore;
 

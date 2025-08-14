@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import de.muenchen.rbs.kitafinderdatenservice.domain.KindmappeId;
+import de.muenchen.rbs.kitafinderdatenservice.kitafinder.adapter.KitafinderExportException;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.adapter.KitafinderExportService;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KindmappeDTO;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderExportDTO;
@@ -75,9 +76,17 @@ public class KindmappenRestReader implements ItemStreamReader<KindmappeDTO>, Ite
 			currentBatchIds.add(item);
 		}
 
-		KitafinderExportDTO result = service
-				.loadKitafinderData(currentBatchIds.stream().map(KindmappeId::getId).toList());
-		this.kindmappen = result.getKindMappen().iterator();
+		if (currentBatchIds.size() > 0) {
+			try {
+				KitafinderExportDTO result = service
+						.loadKitafinderData(currentBatchIds.stream().map(KindmappeId::getId).toList());
+				this.kindmappen = result.getKindMappen().iterator();
+			} catch (KitafinderExportException e) {
+				log.error("Error on loading kitafinder data for ids {}.", currentBatchIds);
+				this.kindmappen = currentBatchIds.stream()
+						.map(id -> KindmappeDTO.builder().id(id.getId()).isGefunden(false).build()).iterator();
+			}
+		}
 	}
 
 	@Override

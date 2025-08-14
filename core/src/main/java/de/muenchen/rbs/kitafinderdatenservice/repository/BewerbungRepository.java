@@ -11,6 +11,6 @@ public interface BewerbungRepository
 		extends PagingAndSortingRepository<Bewerbung, ExportId>, CrudRepository<Bewerbung, ExportId> {
 
 	@Modifying
-	int deleteByExportId(Integer exportId);
+	int deleteByExportId(Long exportId);
 
 }

@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class SorgeberechtigterDTO {
-	private Integer id;
+	private Long id;
 	private String anrede;
 	private String titel;
 	private String vorname;
@@ -30,7 +30,7 @@ public class SorgeberechtigterDTO {
 	private Boolean erstStudiumAusbildung;
 	private Double wochenarbeitszeit;
 	private Double wochenarbeitstage;
-	private Integer lageDerArbeitszeitId;
+	private Long lageDerArbeitszeitId;
 	private Boolean arbeitsuchend;
 	private String arbeitsuchendSeit;
 }

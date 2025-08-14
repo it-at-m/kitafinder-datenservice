@@ -11,10 +11,10 @@ import lombok.Data;
 @Data
 @JsonRootName("kind")
 public class KindDTO {
-	private Integer id;
-	private Integer exportId;
+	private Long id;
+	private Long exportId;
 	private LocalDateTime timestamp;
-	private Integer masterkindId;
+	private Long masterkindId;
 
 	@JsonUnwrapped
 	private KindDatenstand masterkind;

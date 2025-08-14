@@ -5,9 +5,9 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemStream;
 import org.springframework.batch.item.ItemStreamException;
+import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -17,11 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class KindmappenIdRestReader implements ItemReader<KindmappeId>, ItemStream {
+public class KindmappenIdRestReader implements ItemStreamReader<KindmappeId>, ItemStream {
 
 	private KitafinderExportService service;
 
-	private Iterator<Integer> ids;
+	private Iterator<Long> ids;
 	private int currentIndex;
     private static final String CURRENT_INDEX = "current.index";
     
@@ -40,8 +40,9 @@ public class KindmappenIdRestReader implements ItemReader<KindmappeId>, ItemStre
 			currentIndex++;
 			return nextId;
 		} catch (NoSuchElementException | NullPointerException e) {
-			// Aktueller Batch ist leer, lade nächsten Batch.
-			Collection<Integer> loadedIds = service.loadKitafinderKindmappenIds(batchSize, currentIndex);
+			// Current batch is empty. Read next batch.
+			// Abort on error, because we don't want to export an incomplete dataset.
+			Collection<Long> loadedIds = service.loadKitafinderKindmappenIds(batchSize, currentIndex);
 			ids = loadedIds.iterator();
 			try {
 				KindmappeId nextId = new KindmappeId(ids.next());

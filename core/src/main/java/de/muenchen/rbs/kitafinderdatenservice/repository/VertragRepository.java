@@ -11,6 +11,6 @@ public interface VertragRepository
 		extends PagingAndSortingRepository<Vertrag, ExportId>, CrudRepository<Vertrag, ExportId> {
 
 	@Modifying
-	int deleteByExportId(Integer exportId);
+	int deleteByExportId(Long exportId);
 
 }

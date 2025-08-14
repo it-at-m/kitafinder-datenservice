@@ -2,11 +2,13 @@ package de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto;
 
 import java.util.List;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class KindmappeDTO {
-	private Integer id;
+	private Long id;
 	private boolean isGefunden;
 	private List<KindakteDTO> kindAkten;
 	private ErmittlungsDauerDTO ermittlungsDauer;

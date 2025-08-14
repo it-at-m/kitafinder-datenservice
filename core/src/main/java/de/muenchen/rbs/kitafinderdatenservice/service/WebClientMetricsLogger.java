@@ -20,7 +20,7 @@ public class WebClientMetricsLogger implements ExchangeFilterFunction {
 			if (!signal.isOnComplete()) {
 				Long startTime = signal.getContextView().get(METRICS_WEBCLIENT_START_TIME);
 				long duration = System.currentTimeMillis() - startTime;
-				log.info("Downstream call to {} taken {}ms", request.url(), duration);
+				log.info("Call to {} took {}ms", request.url(), duration);
 			}
 		}).contextWrite(ctx -> ctx.put(METRICS_WEBCLIENT_START_TIME, System.currentTimeMillis()));
 	}

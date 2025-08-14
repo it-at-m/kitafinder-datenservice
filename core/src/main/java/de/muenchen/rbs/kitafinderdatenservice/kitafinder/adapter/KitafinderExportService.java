@@ -91,25 +91,27 @@ public class KitafinderExportService {
 				throw new KitafinderExportException(
 						"An error occured when calling kitafinder. Response code: " + response.getStatusCode().value());
 			} else if (response.getBody().getFehlermeldung() != null) {
+				log.debug("Kitafinder responded with a custom error:");
+				log.debug(response.getBody().getStacktrace());
 				throw new KitafinderExportException(response.getBody().getFehlermeldung());
 			} else {
 				return response.getBody();
 			}
 		} catch (WebClientRequestException | WebClientResponseException e) {
-			log.error("An error occured when calling the kitafinder.", e);
+			log.debug("An error occured when calling the kitafinder.", e);
 			throw new KitafinderExportException(e.getClass().getName());
 		}
 	}
 
-	public KitafinderExportDTO loadKitafinderData(Collection<Integer> kindMappenIds) {
-		return this.kitafinderGetRequest(KitafinderExportDTO.class,
-				uriBuilder -> uriBuilder.path("/rbs/kindmappen")
-						.queryParam("kindMappenIds",
-								kindMappenIds.stream().map(i -> i.toString()).collect(Collectors.joining(",")))
-						.build());
+	public KitafinderExportDTO loadKitafinderData(Collection<Long> kindMappenIds) {
+		return this.kitafinderGetRequest(KitafinderExportDTO.class, uriBuilder -> uriBuilder.path("/rbs/kindmappen")
+				// call isn't working with this parameter yet .queryParam("mitAbsagen", true)
+				.queryParam("kindMappenIds",
+						kindMappenIds.stream().map(i -> i.toString()).collect(Collectors.joining(",")))
+				.build());
 	}
 
-	public Collection<Integer> loadKitafinderKindmappenIds(int chunkSize, int offset) {
+	public Collection<Long> loadKitafinderKindmappenIds(int chunkSize, int offset) {
 		KitafinderKindmappenIdsDTO ids = this.kitafinderGetRequest(KitafinderKindmappenIdsDTO.class,
 				uriBuilder -> uriBuilder.path("/rbs/kindmappenids").queryParam("offset", offset)
 						.queryParam("fetch", chunkSize).build());

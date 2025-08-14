@@ -7,22 +7,28 @@ import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class Kind extends KindExportResult {
+@IdClass(ExportId.class)
+public class Kind implements KindExportResult {
+
+	@Id
+	private Long id;
+	@Id
+	private Long exportId;
 
 	private LocalDateTime timestamp;
 
-	private Integer masterkindId;
+	private Long masterkindId;
 
 	@OneToMany(mappedBy = "kind", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	private List<Bewerbung> bewerbungen = new ArrayList<>();

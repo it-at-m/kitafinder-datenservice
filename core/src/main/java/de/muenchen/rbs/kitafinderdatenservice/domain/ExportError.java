@@ -3,17 +3,27 @@ package de.muenchen.rbs.kitafinderdatenservice.domain;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class ExportError extends KindExportResult {
+@IdClass(ExportId.class)
+public class ExportError implements KindExportResult {
+
+	@Id
+	private Long id;
+	@Id
+	private Long exportId;
 
 	private LocalDateTime timestamp;
 
@@ -22,4 +32,5 @@ public class ExportError extends KindExportResult {
 	@ManyToOne
 	@JoinColumn(name = "exportId", nullable = false, insertable = false, updatable = false)
 	private ExportRun exportRun;
+
 }

@@ -44,7 +44,7 @@ public class KindRestController {
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Liefert einen Kind-Datensatz. Es wird der aktuellste Datensatz zur angegebenen Id zurückgegeben.")
-	public ResponseEntity<KindDTO> findOne(@PathVariable("id") Integer id) {
+	public ResponseEntity<KindDTO> findOne(@PathVariable("id") Long id) {
 		Optional<Kind> result = repository.findMostRecentById(id);
 
 		if (result.isEmpty()) {

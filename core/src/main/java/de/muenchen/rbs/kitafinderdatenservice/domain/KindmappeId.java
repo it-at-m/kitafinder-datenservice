@@ -15,5 +15,5 @@ import lombok.NoArgsConstructor;
 public class KindmappeId {
 
 	@Id
-	private Integer id;
+	private Long id;
 }
