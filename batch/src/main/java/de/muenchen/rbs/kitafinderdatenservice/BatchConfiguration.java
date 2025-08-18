@@ -58,9 +58,9 @@ public class BatchConfiguration {
 			Step dataImportStep, JobCompletionListener listener) {
 		return new JobBuilder("kitafinderImportJob", jobRepository)
 				.listener(listener)
-				.start(dataImportStep)
-//				.next(idImportStep)
-//				.next(dataImportStep)
+				.start(idDeleteStep)
+				.next(idImportStep)
+				.next(dataImportStep)
 				.build();
 	}
 
