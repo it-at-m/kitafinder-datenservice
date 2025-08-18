@@ -1,18 +1,11 @@
 package de.muenchen.rbs.kitafinderdatenservice.batch;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemStream;
-import org.springframework.batch.item.ItemStreamException;
-import org.springframework.batch.item.ItemStreamReader;
-import org.springframework.batch.item.NonTransientResourceException;
-import org.springframework.batch.item.ParseException;
-import org.springframework.batch.item.UnexpectedInputException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 
 import de.muenchen.rbs.kitafinderdatenservice.domain.KindmappeId;
@@ -24,87 +17,56 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class KindmappenRestReader implements ItemStreamReader<KindmappeDTO>, ItemStream {
+public class KindmappenRestReader extends AsyncQueueReader<KindmappeDTO> {
 
 	private KitafinderExportService service;
 	private KindmappenIdDbReader idReader;
 
-	private Iterator<KindmappeDTO> kindmappen;
-	private int currentIndex;
-	private static final String CURRENT_INDEX = "current.index";
-
-	private int batchSize = 50;
+	private int batchSize;
 
 	public KindmappenRestReader(@Value("${app.kitafinder.data-batch-size:50}") int batchSize,
-			KindmappenIdDbReader idReader, KitafinderExportService service) {
+			@Autowired TaskExecutor taskExecutor, KindmappenIdDbReader idReader, KitafinderExportService service) {
+		super(batchSize * 4, taskExecutor);
 		this.batchSize = batchSize;
 		this.idReader = idReader;
 		this.service = service;
 	}
 
 	@Override
-	public KindmappeDTO read()
-			throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
-		try {
-			return getNextValue();
-		} catch (NoSuchElementException | NullPointerException e) {
-			// Aktueller Batch ist leer, lade nächsten Batch.
-			this.loadNextBatch();
-			try {
-				return getNextValue();
-			} catch (NoSuchElementException | NullPointerException e2) {
-				// Am Ende wird null zurückgegeben
-				return null;
-			}
-		}
-	}
-
-	private KindmappeDTO getNextValue() {
-		KindmappeDTO nextId = kindmappen.next();
-		currentIndex++;
-		return nextId;
-	}
-
-	private void loadNextBatch() {
+	protected List<KindmappeDTO> getNextBatch() {
 		List<KindmappeId> currentBatchIds = new ArrayList<>();
-		currentBatchIds.clear();
+		boolean markAsDone = false;
 		for (int i = 0; i < batchSize; i++) {
 			KindmappeId item = idReader.read();
+
 			if (item == null) {
+				markAsDone = true;
 				break; // Stop if no more items are available
 			}
 			currentBatchIds.add(item);
 		}
 
+		List<KindmappeDTO> nextBatch = new ArrayList<>();
+		
 		if (currentBatchIds.size() > 0) {
 			try {
 				KitafinderExportDTO result = service
 						.loadKitafinderData(currentBatchIds.stream().map(KindmappeId::getId).toList());
-				this.kindmappen = result.getKindMappen().iterator();
+				nextBatch.addAll(result.getKindMappen());
 			} catch (KitafinderExportException e) {
 				log.error("Error on loading kitafinder data for ids {}.", currentBatchIds);
-				this.kindmappen = currentBatchIds.stream()
-						.map(id -> KindmappeDTO.builder().id(id.getId()).isGefunden(false).build()).iterator();
+				nextBatch.addAll(currentBatchIds.stream()
+						.map(id -> KindmappeDTO.builder().id(id.getId()).isGefunden(false).build()).toList());
 			}
-		}
-	}
-
-	@Override
-	public void open(ExecutionContext executionContext) throws ItemStreamException {
-		if (executionContext.containsKey(CURRENT_INDEX)) {
-			idReader.setCurrentIndex(Long.valueOf(executionContext.getLong(CURRENT_INDEX)).intValue());
+		} else {
+			markAsDone = true;
 		}
 
-		log.info("Starting KindmappenRestReader from index {}.", currentIndex);
-	}
+		if (markAsDone) {
+			nextBatch.add(null);
+		}
 
-	@Override
-	public void update(ExecutionContext executionContext) throws ItemStreamException {
-		executionContext.putLong(CURRENT_INDEX, Long.valueOf(currentIndex).longValue());
-	}
-
-	@Override
-	public void close() throws ItemStreamException {
+		return nextBatch;
 	}
 
 }

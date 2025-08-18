@@ -56,8 +56,12 @@ public class BatchConfiguration {
 	@Bean
 	public Job kitafinderImportJob(JobRepository jobRepository, Step idImportStep, Step idDeleteStep,
 			Step dataImportStep, JobCompletionListener listener) {
-		return new JobBuilder("kitafinderImportJob", jobRepository).listener(listener).start(idDeleteStep)
-				.next(idImportStep).next(dataImportStep).build();
+		return new JobBuilder("kitafinderImportJob", jobRepository)
+				.listener(listener)
+				.start(dataImportStep)
+//				.next(idImportStep)
+//				.next(dataImportStep)
+				.build();
 	}
 
 	@Bean
@@ -68,14 +72,21 @@ public class BatchConfiguration {
 		syncronousReader.setDelegate(reader);
 
 		return new StepBuilder("idImportStep", jobRepository)
-				.<KindmappeId, KindmappeId>chunk(batchSize, transactionManager).reader(syncronousReader).writer(writer)
-				.taskExecutor(taskExecutor).build();
+				.<KindmappeId, KindmappeId>chunk(batchSize, transactionManager)
+				.reader(syncronousReader)
+				.writer(writer)
+				.allowStartIfComplete(true)
+				.taskExecutor(taskExecutor)
+				.build();
 	}
 
 	@Bean
 	public Step idDeleteStep(JobRepository jobRepository, JpaTransactionManager transactionManager,
 			KindmappenIdDeleteTasklet task) {
-		return new StepBuilder("idDeleteStep", jobRepository).tasklet(task, transactionManager).build();
+		return new StepBuilder("idDeleteStep", jobRepository)
+				.tasklet(task, transactionManager)
+				.allowStartIfComplete(true)
+				.build();
 	}
 
 	@Bean
@@ -86,7 +97,11 @@ public class BatchConfiguration {
 		syncronousReader.setDelegate(reader);
 
 		return new StepBuilder("dataImportStep", jobRepository)
-				.<KindmappeDTO, KindExportResult>chunk(batchSize, transactionManager).reader(syncronousReader)
-				.processor(mappingProcessor).writer(writer).taskExecutor(taskExecutor).build();
+				.<KindmappeDTO, KindExportResult>chunk(batchSize, transactionManager)
+				.reader(syncronousReader)
+				.processor(mappingProcessor).
+				writer(writer)
+				.taskExecutor(taskExecutor)
+				.build();
 	}
 }

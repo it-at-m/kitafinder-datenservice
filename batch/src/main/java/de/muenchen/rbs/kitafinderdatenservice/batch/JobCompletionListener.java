@@ -1,12 +1,14 @@
 package de.muenchen.rbs.kitafinderdatenservice.batch;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import de.muenchen.rbs.kitafinderdatenservice.domain.ExportRun;
@@ -21,11 +23,8 @@ public class JobCompletionListener implements JobExecutionListener {
 	@Autowired
 	private ExportRunRepository exportRunRepository;
 
-//	@Autowired
-//	private ConfigurableApplicationContext context;
-//	
-//	@Autowired
-//	ThreadPoolTaskExecutor executor;
+	@Autowired
+	ThreadPoolTaskExecutor executor;
 
 	@Override
 	public void afterJob(JobExecution jobExecution) {
@@ -43,10 +42,14 @@ public class JobCompletionListener implements JobExecutionListener {
 		exportRun.setEndTime(LocalDateTime.now());
 		exportRunRepository.save(exportRun);
 
-//		executor.setAwaitTerminationSeconds(120);
-//		executor.setWaitForTasksToCompleteOnShutdown(true);
-//		executor.initiateShutdown();
-//		
-//		context.close();
+		executor.shutdown();
+		try {
+			if (!executor.getThreadPoolExecutor().awaitTermination(60, TimeUnit.SECONDS)) {
+				executor.getThreadPoolExecutor().shutdownNow();
+			}
+		} catch (InterruptedException ex) {
+			executor.getThreadPoolExecutor().shutdownNow();
+			Thread.currentThread().interrupt();
+		}
 	}
 }

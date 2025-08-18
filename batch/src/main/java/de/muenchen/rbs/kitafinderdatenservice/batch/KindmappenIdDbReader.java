@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import de.muenchen.rbs.kitafinderdatenservice.domain.KindmappeId;
 import de.muenchen.rbs.kitafinderdatenservice.repository.KindmappeIdRepository;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -22,27 +21,35 @@ public class KindmappenIdDbReader implements ItemReader<KindmappeId> {
 
 	private Iterator<KindmappeId> ids;
 
-	@Setter
 	private int currentIndex;
 
-	private int batchSize = 50;
+	private int batchSize;
+
+	private boolean done = false;
 
 	public KindmappenIdDbReader(KindmappeIdRepository idRepository,
 			@Value("${app.kitafinder.id-batch-size:100}") int batchSize) {
 		this.idRepository = idRepository;
 		this.batchSize = batchSize;
+
+		loadNextBatch();
 	}
 
 	@Override
 	public KindmappeId read() {
+		if (done) {
+			return null;
+		}
+
 		try {
 			return getNextId();
-		} catch (NoSuchElementException | NullPointerException e) {
+		} catch (NoSuchElementException e) {
 			// Aktueller Batch ist leer, lade nächsten Batch.
 			this.loadNextBatch();
 			try {
 				return getNextId();
-			} catch (NoSuchElementException | NullPointerException e2) {
+			} catch (NoSuchElementException e2) {
+				done = true;
 				// Am Ende wird null zurückgegeben
 				return null;
 			}
@@ -51,15 +58,15 @@ public class KindmappenIdDbReader implements ItemReader<KindmappeId> {
 
 	private KindmappeId getNextId() {
 		KindmappeId nextId = ids.next();
-		currentIndex++;
 		return nextId;
 	}
 
 	private void loadNextBatch() {
 		Page<KindmappeId> loadedIds = idRepository
 				.findAll(Pageable.ofSize(batchSize).withPage(currentIndex / batchSize));
-		// skip to the correct position if necessary
-		ids = loadedIds.stream().skip(currentIndex % batchSize).iterator();
+		ids = loadedIds.stream().iterator();
+
+		currentIndex += loadedIds.getSize();
 	}
 
 }

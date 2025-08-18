@@ -18,12 +18,12 @@ spring:
 
 app:
   export.id: # override to restart a previous run
-  thread-count: 20
+  thread-count: 10
   kitafinder:
     base-url: http://kitafinder-plan-k3.muenchen.de/kitaplaner/api
     username: # provide locally
     password: # provide locally
-    timeout-seconds: 30
+    timeout-seconds: 20
     id-batch-size: 250
     data-batch-size: 50
     cleanup-keep-age: -1
