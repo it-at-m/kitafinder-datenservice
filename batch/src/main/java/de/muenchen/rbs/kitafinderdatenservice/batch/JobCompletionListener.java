@@ -28,20 +28,24 @@ public class JobCompletionListener implements JobExecutionListener {
 
 	@Override
 	public void afterJob(JobExecution jobExecution) {
+		this.shutdownExecutor();
+
 		JobParameters parameters = jobExecution.getJobParameters();
 		long exportRunId = parameters.getLong("EXPORT_ID");
 
 		ExportRun exportRun = exportRunRepository.findById(exportRunId).orElseThrow(
 				() -> new IllegalStateException("Trying to restart a previous ExportRun that cannot be found."));
 
-		if (ExitStatus.COMPLETED == jobExecution.getExitStatus()) {
+		if (ExitStatus.COMPLETED.equals(jobExecution.getExitStatus())) {
 			exportRun.setStatus(ExportStatus.SUCCESS);
 		} else {
 			exportRun.setStatus(ExportStatus.ERROR);
 		}
 		exportRun.setEndTime(LocalDateTime.now());
 		exportRunRepository.save(exportRun);
+	}
 
+	private void shutdownExecutor() {
 		executor.shutdown();
 		try {
 			if (!executor.getThreadPoolExecutor().awaitTermination(60, TimeUnit.SECONDS)) {

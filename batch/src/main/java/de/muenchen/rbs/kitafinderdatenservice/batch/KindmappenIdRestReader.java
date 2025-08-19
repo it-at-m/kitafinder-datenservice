@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class KindmappenIdRestReader extends AsyncQueueReader<KindmappeId>
+public class KindmappenIdRestReader extends AsyncQueueBatchReader<KindmappeId>
 		implements ItemStreamReader<KindmappeId>, ItemStream {
 
 	private KitafinderExportService service;

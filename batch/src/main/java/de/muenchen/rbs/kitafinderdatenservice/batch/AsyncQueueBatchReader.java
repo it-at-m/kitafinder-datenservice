@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
  * @param <T> Class of the Items this reader is providing.
  */
 @Slf4j
-public abstract class AsyncQueueReader<T> implements ItemStreamReader<T>, ItemStream {
+public abstract class AsyncQueueBatchReader<T> implements ItemStreamReader<T>, ItemStream {
 
 	private BlockingQueue<T> dataQueue;
 
@@ -37,7 +37,7 @@ public abstract class AsyncQueueReader<T> implements ItemStreamReader<T>, ItemSt
 
 	private TaskExecutor taskExecutor;
 
-	public AsyncQueueReader(int queueSize, TaskExecutor taskExecutor) {
+	public AsyncQueueBatchReader(int queueSize, TaskExecutor taskExecutor) {
 		this.taskExecutor = taskExecutor;
 		dataQueue = new ArrayBlockingQueue<>(queueSize);
 	}

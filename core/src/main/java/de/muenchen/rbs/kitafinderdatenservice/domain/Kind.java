@@ -9,8 +9,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,10 +33,6 @@ public class Kind implements KindExportResult {
 
 	@OneToMany(mappedBy = "kind", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
 	private List<Vertrag> vertraege = new ArrayList<>();
-
-	@ManyToOne
-	@JoinColumn(name = "exportId", nullable = false, insertable = false, updatable = false)
-	private ExportRun exportRun;
 
 	public KindDatenstand getMasterkind() {
 		KindDatenstand masterkind = getKinddaten().stream().filter(k -> k.getId().equals(this.getMasterkindId()))

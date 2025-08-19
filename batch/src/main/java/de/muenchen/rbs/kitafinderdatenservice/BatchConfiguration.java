@@ -1,5 +1,7 @@
 package de.muenchen.rbs.kitafinderdatenservice;
 
+import java.util.List;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -20,13 +22,18 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import de.muenchen.rbs.kitafinderdatenservice.batch.JobCompletionListener;
+import de.muenchen.rbs.kitafinderdatenservice.batch.KindDbReader;
+import de.muenchen.rbs.kitafinderdatenservice.batch.KindEventProcessor;
 import de.muenchen.rbs.kitafinderdatenservice.batch.KindExportResultWriter;
 import de.muenchen.rbs.kitafinderdatenservice.batch.KindmappenIdDeleteTasklet;
 import de.muenchen.rbs.kitafinderdatenservice.batch.KindmappenIdRestReader;
 import de.muenchen.rbs.kitafinderdatenservice.batch.KindmappenProcessor;
 import de.muenchen.rbs.kitafinderdatenservice.batch.KindmappenRestReader;
+import de.muenchen.rbs.kitafinderdatenservice.batch.OutboxeventBatchWriter;
+import de.muenchen.rbs.kitafinderdatenservice.domain.Kind;
 import de.muenchen.rbs.kitafinderdatenservice.domain.KindExportResult;
 import de.muenchen.rbs.kitafinderdatenservice.domain.KindmappeId;
+import de.muenchen.rbs.kitafinderdatenservice.domain.events.Outboxevent;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KindmappeDTO;
 import de.muenchen.rbs.kitafinderdatenservice.repository.KindmappeIdRepository;
 
@@ -55,12 +62,13 @@ public class BatchConfiguration {
 
 	@Bean
 	public Job kitafinderImportJob(JobRepository jobRepository, Step idImportStep, Step idDeleteStep,
-			Step dataImportStep, JobCompletionListener listener) {
+			Step dataImportStep, Step eventGenerationStep, JobCompletionListener listener) {
 		return new JobBuilder("kitafinderImportJob", jobRepository)
 				.listener(listener)
 				.start(idDeleteStep)
 				.next(idImportStep)
 				.next(dataImportStep)
+				.next(eventGenerationStep)
 				.build();
 	}
 
@@ -101,6 +109,22 @@ public class BatchConfiguration {
 				.reader(syncronousReader)
 				.processor(mappingProcessor).
 				writer(writer)
+				.taskExecutor(taskExecutor)
+				.build();
+	}
+
+	@Bean
+	public Step eventGenerationStep(TaskExecutor taskExecutor, JobRepository jobRepository,
+			JpaTransactionManager transactionManager, KindDbReader kindDbReader, KindEventProcessor eventProcessor,
+			OutboxeventBatchWriter eventWriter, @Value("${app.kitafinder.data-batch-size:50}") int batchSize) {
+		SynchronizedItemStreamReader<Kind> syncronousReader = new SynchronizedItemStreamReader<>();
+		syncronousReader.setDelegate(kindDbReader);
+		
+		return new StepBuilder("eventGenerationStep", jobRepository)
+				.<Kind, List<Outboxevent>>chunk(batchSize, transactionManager)
+				.reader(syncronousReader)
+				.processor(eventProcessor)
+				.writer(eventWriter)
 				.taskExecutor(taskExecutor)
 				.build();
 	}

@@ -23,7 +23,7 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 /**
  * Scheduled Task, der Events in der Outbox "verschickt".
  * 
- * @author michael.prankl
+ * @author m.zollbrecht
  *
  */
 @Component

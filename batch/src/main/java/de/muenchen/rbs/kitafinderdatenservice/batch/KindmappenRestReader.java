@@ -3,7 +3,6 @@ package de.muenchen.rbs.kitafinderdatenservice.batch;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
@@ -17,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class KindmappenRestReader extends AsyncQueueReader<KindmappeDTO> {
+public class KindmappenRestReader extends AsyncQueueBatchReader<KindmappeDTO> {
 
 	private KitafinderExportService service;
 	private KindmappenIdDbReader idReader;
@@ -25,7 +24,7 @@ public class KindmappenRestReader extends AsyncQueueReader<KindmappeDTO> {
 	private int batchSize;
 
 	public KindmappenRestReader(@Value("${app.kitafinder.data-batch-size:50}") int batchSize,
-			@Autowired TaskExecutor taskExecutor, KindmappenIdDbReader idReader, KitafinderExportService service) {
+			TaskExecutor taskExecutor, KindmappenIdDbReader idReader, KitafinderExportService service) {
 		super(batchSize * 4, taskExecutor);
 		this.batchSize = batchSize;
 		this.idReader = idReader;
