@@ -20,7 +20,7 @@ public class OutboxeventIT {
 	@Test
 	public void saveBasicEvent() {
 		Kind kind = new Kind();
-		kind.setId(1);
+		kind.setId(1l);
 
 		service.saveAll(List.of(service.buildKindCreated(kind)));
 	}
