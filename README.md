@@ -47,11 +47,13 @@ Provides REST-endpoints serving the stored data. A local deployment of this modu
 
 ### Data import/export
 
-The batch-module performs its loading process in 3 steps:
+The batch-module performs its loading process in multiple steps:
 
-1. Load all Kindmappe ids
-2. Load all Kindmappe entities and generate events
-3. Clean up old data
+1. Delete all previous Kindmappen ids
+2. Read and store all Kindmappen ids
+3. Read all Kindmappen and store them as Kind
+4. Generate events by comparing the last two states of imported data
+5. Clean up old data
 
 The configuration for the kita-planer connection is defined under 'app.kitafinder.*'.
 

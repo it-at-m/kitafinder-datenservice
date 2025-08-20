@@ -15,9 +15,12 @@ import de.muenchen.rbs.kitafinderdatenservice.domain.Kind;
 public interface KindRepository extends PagingAndSortingRepository<Kind, ExportId>, CrudRepository<Kind, ExportId> {
 
 	@Query(value = "SELECT * FROM KIND_AKTUELL WHERE id = :id", nativeQuery = true)
-	Optional<Kind> findMostRecentById(Long id);
+	Optional<Kind> findAktuellById(Long id);
 
 	@Query(value = "SELECT * FROM KIND_AKTUELL", nativeQuery = true)
+	Page<Kind> findAllAktuell(Pageable page);
+
+	@Query(value = "SELECT * FROM KIND WHERE export_id = (SELECT MAX(ID) FROM EXPORT_RUN)", nativeQuery = true)
 	Page<Kind> findAllMostRecent(Pageable page);
 
 	@Modifying

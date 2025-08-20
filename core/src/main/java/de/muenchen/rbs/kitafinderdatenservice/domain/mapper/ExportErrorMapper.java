@@ -6,6 +6,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import de.muenchen.rbs.kitafinderdatenservice.domain.ExportError;
+import de.muenchen.rbs.kitafinderdatenservice.domain.Kind;
 import de.muenchen.rbs.kitafinderdatenservice.domain.KindmappeId;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KindmappeDTO;
 
@@ -23,5 +24,9 @@ public interface ExportErrorMapper {
 	@Mapping(target = "timestamp", expression = "java(java.time.LocalDateTime.now())")
 	@Mapping(target = "errorMessage", expression = "java(message)")
 	ExportError idToExportError(KindmappeId id, @Context Long exportId, @Context String message);
+
+	@Mapping(target = "timestamp", expression = "java(java.time.LocalDateTime.now())")
+	@Mapping(target = "errorMessage", expression = "java(message)")
+	ExportError kindToExportError(Kind id, @Context String message);
 
 }

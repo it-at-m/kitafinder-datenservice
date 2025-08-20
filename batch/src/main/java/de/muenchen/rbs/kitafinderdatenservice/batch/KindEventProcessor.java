@@ -12,7 +12,9 @@ import de.muenchen.rbs.kitafinderdatenservice.domain.events.Outboxevent;
 import de.muenchen.rbs.kitafinderdatenservice.repository.KindRepository;
 import de.muenchen.rbs.kitafinderdatenservice.service.OutboxeventService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 @AllArgsConstructor
 public class KindEventProcessor implements ItemProcessor<Kind, List<Outboxevent>> {
@@ -24,7 +26,7 @@ public class KindEventProcessor implements ItemProcessor<Kind, List<Outboxevent>
 	public List<Outboxevent> process(Kind kind) throws Exception {
 		List<Outboxevent> events = new ArrayList<>();
 
-		Optional<Kind> oldKind = kindRepository.findMostRecentById(kind.getId());
+		Optional<Kind> oldKind = kindRepository.findAktuellById(kind.getId());
 
 		if (oldKind.isEmpty()) {
 			events.add(outboxeventService.buildKindCreated(kind));

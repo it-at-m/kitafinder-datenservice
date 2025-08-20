@@ -21,6 +21,7 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import de.muenchen.rbs.kitafinderdatenservice.batch.FailedRunCleanupTasklet;
 import de.muenchen.rbs.kitafinderdatenservice.batch.JobCompletionListener;
 import de.muenchen.rbs.kitafinderdatenservice.batch.KindDbReader;
 import de.muenchen.rbs.kitafinderdatenservice.batch.KindEventProcessor;
@@ -29,6 +30,7 @@ import de.muenchen.rbs.kitafinderdatenservice.batch.KindmappenIdDeleteTasklet;
 import de.muenchen.rbs.kitafinderdatenservice.batch.KindmappenIdRestReader;
 import de.muenchen.rbs.kitafinderdatenservice.batch.KindmappenProcessor;
 import de.muenchen.rbs.kitafinderdatenservice.batch.KindmappenRestReader;
+import de.muenchen.rbs.kitafinderdatenservice.batch.OldKindDeleteTasklet;
 import de.muenchen.rbs.kitafinderdatenservice.batch.OutboxeventBatchWriter;
 import de.muenchen.rbs.kitafinderdatenservice.domain.Kind;
 import de.muenchen.rbs.kitafinderdatenservice.domain.KindExportResult;
@@ -62,13 +64,16 @@ public class BatchConfiguration {
 
 	@Bean
 	public Job kitafinderImportJob(JobRepository jobRepository, Step idImportStep, Step idDeleteStep,
-			Step dataImportStep, Step eventGenerationStep, JobCompletionListener listener) {
+			Step dataImportStep, Step eventGenerationStep, Step cleanUpStep, Step oldDataDeleteStep, JobCompletionListener listener) {
 		return new JobBuilder("kitafinderImportJob", jobRepository)
 				.listener(listener)
 				.start(idDeleteStep)
 				.next(idImportStep)
 				.next(dataImportStep)
-				.next(eventGenerationStep)
+				.on("*").to(cleanUpStep)
+				.from(dataImportStep).on("COMPLETED").to(eventGenerationStep)
+				.from(eventGenerationStep).next(oldDataDeleteStep)
+				.end()
 				.build();
 	}
 
@@ -107,9 +112,10 @@ public class BatchConfiguration {
 		return new StepBuilder("dataImportStep", jobRepository)
 				.<KindmappeDTO, KindExportResult>chunk(batchSize, transactionManager)
 				.reader(syncronousReader)
-				.processor(mappingProcessor).
-				writer(writer)
+				.processor(mappingProcessor)
+				.writer(writer)
 				.taskExecutor(taskExecutor)
+				.allowStartIfComplete(true)
 				.build();
 	}
 
@@ -126,6 +132,24 @@ public class BatchConfiguration {
 				.processor(eventProcessor)
 				.writer(eventWriter)
 				.taskExecutor(taskExecutor)
+				.build();
+	}
+
+	@Bean
+	public Step oldDataDeleteStep(TaskExecutor taskExecutor, JobRepository jobRepository,
+			JpaTransactionManager transactionManager, OldKindDeleteTasklet task) {
+		return new StepBuilder("oldDataDeleteStep", jobRepository)
+				.tasklet(task, transactionManager)
+				.allowStartIfComplete(true)
+				.build();
+	}
+
+	@Bean
+	public Step cleanUpStep(TaskExecutor taskExecutor, JobRepository jobRepository,
+			JpaTransactionManager transactionManager, FailedRunCleanupTasklet task) {
+		return new StepBuilder("cleanUpStep", jobRepository)
+				.tasklet(task, transactionManager)
+				.allowStartIfComplete(true)
 				.build();
 	}
 }
