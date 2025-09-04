@@ -3,6 +3,7 @@ package de.muenchen.rbs.kitafinderdatenservice.service;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import de.muenchen.rbs.kitafinderdatenservice.domain.events.OutboxState;
 import de.muenchen.rbs.kitafinderdatenservice.domain.events.Outboxevent;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,6 +24,7 @@ public class LoggingOnlyEventHandler implements EventHandlerDelegate {
 	@Override
 	public void consumeEvent(Outboxevent event) {
 		log.info(event.toString());
+		event.setState(OutboxState.SUCCESSFUL);
 	}
 
 }
