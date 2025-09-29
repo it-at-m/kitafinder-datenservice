@@ -1,8 +1,10 @@
 package de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class SorgeberechtigterDTO {
 	private Long id;
 	private String anrede;

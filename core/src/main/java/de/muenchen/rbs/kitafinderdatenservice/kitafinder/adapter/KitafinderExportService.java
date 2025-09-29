@@ -74,7 +74,9 @@ public class KitafinderExportService {
 				Math.toIntExact(timeoutSeconds * 1000));
 
 		this.webClient = webClientBuilder.baseUrl(this.baseUrl)
-				.clientConnector(new ReactorClientHttpConnector(httpClient)).filter(webClientMetricsLogger).build();
+				.clientConnector(new ReactorClientHttpConnector(httpClient))
+				.filter(webClientMetricsLogger)
+				.build();
 	}
 
 	@Retryable(maxAttemptsExpression = "#{@retryMaxAttempts}", retryFor = { KitafinderExportException.class })

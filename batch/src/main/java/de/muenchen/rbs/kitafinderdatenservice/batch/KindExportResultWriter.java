@@ -10,7 +10,6 @@ import de.muenchen.rbs.kitafinderdatenservice.domain.KindExportResult;
 import de.muenchen.rbs.kitafinderdatenservice.domain.mapper.ExportErrorMapper;
 import de.muenchen.rbs.kitafinderdatenservice.repository.ExportErrorRepository;
 import de.muenchen.rbs.kitafinderdatenservice.repository.KindRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +21,7 @@ public class KindExportResultWriter implements ItemWriter<KindExportResult> {
 	private final KindRepository kindRepository;
 	private final ExportErrorRepository errorRepository;
 	private ExportErrorMapper errorMapper = ExportErrorMapper.INSTANCE;
-	
+
 	@Override
 	public void write(Chunk<? extends KindExportResult> results) throws Exception {
 		for (KindExportResult result : results) {

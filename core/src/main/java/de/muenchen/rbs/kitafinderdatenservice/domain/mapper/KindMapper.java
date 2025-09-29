@@ -36,8 +36,14 @@ public interface KindMapper {
 			for (KindakteDTO ka : km.getKindAkten()) {
 				KindDatenstand stand = this.kindakteToKindDatenstand(ka, exportId, kind);
 
+				if(ka.getKontingente() != null && ka.getKontingente().size() > 0) {
+					System.out.println("k: " + ka.getKontingente().size());
+				}
 				if (stand instanceof Vertrag v) {
 					vertraege.add(v);
+					if(ka.getVerträge() != null && ka.getVerträge().size() > 0) {
+						System.out.println("v: " + ka.getVerträge().size());
+					}
 				} else if (stand instanceof Bewerbung b) {
 					bewerbungen.add(b);
 				}

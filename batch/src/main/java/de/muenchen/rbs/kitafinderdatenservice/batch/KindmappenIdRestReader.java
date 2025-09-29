@@ -36,7 +36,7 @@ public class KindmappenIdRestReader extends AsyncQueueBatchReader<KindmappeId>
 		Collection<Long> loadedIds = service.loadKitafinderKindmappenIds(batchSize, currentIndex);
 		this.currentIndex += loadedIds.size();
 		List<KindmappeId> mappedIds = new ArrayList<>(loadedIds.stream().map(id -> new KindmappeId(id)).toList());
-
+		
 		// mark stream as done when result is last page
 		if (loadedIds.size() < batchSize) {
 			mappedIds.add(null);
