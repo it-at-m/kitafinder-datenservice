@@ -89,11 +89,19 @@ public class BatchConfiguration {
 	public Job kitafinderImportJob(JobRepository jobRepository, Step idImportStep, Step idDeleteStep,
 			Step dataImportStep, Step eventGenerationDeciderStep, Step newKindEventStep, Step newVertragEventStep,
 			Step cleanUpStep, Step oldDataDeleteStep, JobCompletionListener listener) {
-		return new JobBuilder("kitafinderImportJob", jobRepository).listener(listener).start(idDeleteStep)
-				.next(idImportStep).next(dataImportStep).on("*").to(cleanUpStep).from(dataImportStep).on("COMPLETED")
-				.to(eventGenerationDeciderStep).from(eventGenerationDeciderStep).on("*").to(oldDataDeleteStep)
-				.from(eventGenerationDeciderStep).on("COMPLETED").to(newKindEventStep).from(newKindEventStep)
-				.next(newVertragEventStep).next(oldDataDeleteStep).end().build();
+		return new JobBuilder("kitafinderImportJob", jobRepository)
+				.listener(listener)
+				.start(idDeleteStep)
+				.next(idImportStep)
+				.next(dataImportStep)
+				.on("*").to(cleanUpStep)
+				.from(dataImportStep).on("COMPLETED").to(eventGenerationDeciderStep)
+				.from(eventGenerationDeciderStep).on("*").to(oldDataDeleteStep)
+				.from(eventGenerationDeciderStep).on("COMPLETED").to(newKindEventStep)
+				.from(newKindEventStep)
+				.next(newVertragEventStep)
+				.next(oldDataDeleteStep)
+				.end().build();
 	}
 
 	@Bean
@@ -104,14 +112,19 @@ public class BatchConfiguration {
 		syncronousReader.setDelegate(reader);
 
 		return new StepBuilder("idImportStep", jobRepository)
-				.<KindmappeId, KindmappeId>chunk(batchSize, transactionManager).reader(syncronousReader).writer(writer)
-				.allowStartIfComplete(true).taskExecutor(taskExecutor).build();
+				.<KindmappeId, KindmappeId>chunk(batchSize, transactionManager)
+				.reader(syncronousReader)
+				.writer(writer)
+				.allowStartIfComplete(true)
+				.taskExecutor(taskExecutor)
+				.build();
 	}
 
 	@Bean
 	public Step idDeleteStep(JobRepository jobRepository, JpaTransactionManager transactionManager,
 			KindmappenIdDeleteTasklet task) {
-		return new StepBuilder("idDeleteStep", jobRepository).tasklet(task, transactionManager)
+		return new StepBuilder("idDeleteStep", jobRepository)
+				.tasklet(task, transactionManager)
 				.allowStartIfComplete(true).build();
 	}
 
@@ -123,8 +136,12 @@ public class BatchConfiguration {
 		syncronousReader.setDelegate(reader);
 
 		return new StepBuilder("dataImportStep", jobRepository)
-				.<KindmappeDTO, KindExportResult>chunk(batchSize, transactionManager).reader(syncronousReader)
-				.processor(mappingProcessor).writer(writer).taskExecutor(taskExecutor).allowStartIfComplete(true)
+				.<KindmappeDTO, KindExportResult>chunk(batchSize, transactionManager)
+				.reader(syncronousReader)
+				.processor(mappingProcessor)
+				.writer(writer)
+				.taskExecutor(taskExecutor)
+				.allowStartIfComplete(true)
 				.build();
 	}
 
@@ -133,8 +150,11 @@ public class BatchConfiguration {
 			JpaTransactionManager transactionManager, ItemReader<Kind> newKindReader, KindEventProcessor eventProcessor,
 			ItemWriter<Outboxevent> eventWriter, @Value("${app.kitafinder.data-batch-size:50}") int batchSize) {
 		return new StepBuilder("newKindEventStep", jobRepository)
-				.<Kind, Outboxevent>chunk(batchSize, transactionManager).reader(newKindReader).processor(eventProcessor)
-				.writer(eventWriter).build();
+				.<Kind, Outboxevent>chunk(batchSize, transactionManager)
+				.reader(newKindReader)
+				.processor(eventProcessor)
+				.writer(eventWriter)
+				.build();
 	}
 
 	@Bean
@@ -143,28 +163,37 @@ public class BatchConfiguration {
 			VertragEventProcessor eventProcessor, ItemWriter<Outboxevent> eventWriter,
 			@Value("${app.kitafinder.data-batch-size:50}") int batchSize) {
 		return new StepBuilder("newVertragEventStep", jobRepository)
-				.<Vertrag, Outboxevent>chunk(batchSize, transactionManager).reader(newVertragReader)
-				.processor(eventProcessor).writer(eventWriter).build();
+				.<Vertrag, Outboxevent>chunk(batchSize, transactionManager)
+				.reader(newVertragReader)
+				.processor(eventProcessor)
+				.writer(eventWriter)
+				.build();
 	}
 
 	@Bean
 	public Step oldDataDeleteStep(TaskExecutor taskExecutor, JobRepository jobRepository,
 			JpaTransactionManager transactionManager, OldKindDeleteTasklet task) {
-		return new StepBuilder("oldDataDeleteStep", jobRepository).tasklet(task, transactionManager)
-				.allowStartIfComplete(true).build();
+		return new StepBuilder("oldDataDeleteStep", jobRepository)
+				.tasklet(task, transactionManager)
+				.allowStartIfComplete(true)
+				.build();
 	}
 
 	@Bean
 	public Step eventGenerationDeciderStep(TaskExecutor taskExecutor, JobRepository jobRepository,
 			JpaTransactionManager transactionManager, EventGenerationDeciderTasklet task) {
-		return new StepBuilder("eventGenerationDeciderStep", jobRepository).tasklet(task, transactionManager)
-				.allowStartIfComplete(true).build();
+		return new StepBuilder("eventGenerationDeciderStep", jobRepository)
+				.tasklet(task, transactionManager)
+				.allowStartIfComplete(true)
+				.build();
 	}
 
 	@Bean
 	public Step cleanUpStep(TaskExecutor taskExecutor, JobRepository jobRepository,
 			JpaTransactionManager transactionManager, FailedRunCleanupTasklet task) {
-		return new StepBuilder("cleanUpStep", jobRepository).tasklet(task, transactionManager)
-				.allowStartIfComplete(true).build();
+		return new StepBuilder("cleanUpStep", jobRepository)
+				.tasklet(task, transactionManager)
+				.allowStartIfComplete(true)
+				.build();
 	}
 }
