@@ -22,9 +22,10 @@ public interface VertragRepository
 	Optional<Vertrag> findMostRecentById(Long id);
 
 	@Query(value = """
-			SELECT V.ID FROM VERTRAG V
+			SELECT * FROM VERTRAG V
+			JOIN KINDDATEN K ON V.ID = K.ID AND V.EXPORT_ID = K.EXPORT_ID
 			WHERE V.EXPORT_ID = (SELECT MAX(R.ID) FROM EXPORT_RUN R)
 			AND V.ID NOT IN (SELECT VERTRAG_AKTUELL.ID FROM VERTRAG_AKTUELL)
 			ORDER BY V.ID ASC""", nativeQuery = true)
-	Page<Long> findNew(Pageable page);
+	Page<Vertrag> findNew(Pageable page);
 }

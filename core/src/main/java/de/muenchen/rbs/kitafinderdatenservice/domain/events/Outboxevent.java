@@ -48,6 +48,7 @@ public class Outboxevent implements Serializable {
 
 	@NotNull
 	@ToString.Include
+	@Enumerated(EnumType.STRING)
 	private EventType type;
 
 	@NotNull

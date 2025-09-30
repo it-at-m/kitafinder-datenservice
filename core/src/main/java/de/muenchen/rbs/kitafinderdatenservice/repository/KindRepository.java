@@ -31,9 +31,9 @@ public interface KindRepository extends PagingAndSortingRepository<Kind, ExportI
 	int deleteByExportId(Long exportId);
 
 	@Query(value = """
-			SELECT ID FROM KIND
+			SELECT * FROM KIND
 			WHERE KIND.EXPORT_ID = (SELECT MAX(R.ID) FROM EXPORT_RUN R)
 			AND ID NOT IN (SELECT KIND_AKTUELL.ID FROM KIND_AKTUELL)
 			ORDER BY ID ASC""", nativeQuery = true)
-	Page<Long> findNew(Pageable page);
+	Page<Kind> findNew(Pageable page);
 }
