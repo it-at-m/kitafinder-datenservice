@@ -147,40 +147,33 @@ public class KindDatenstand {
 	}
 
 	@ElementCollection(targetClass = Long.class, fetch = FetchType.EAGER)
-	@CollectionTable(name = "BESONDERE_LAGE", joinColumns = { @JoinColumn(name = "id"),
-			@JoinColumn(name = "exportId") })
+	@CollectionTable(name = "BESONDERE_LAGE", joinColumns = { @JoinColumn(name = "exportId"), @JoinColumn(name = "kinddatenId") })
 	@Column(name = "BESONDERE_LAGE_ID")
 	private List<Long> besondereLageIds;
 
 	@ElementCollection(targetClass = Long.class, fetch = FetchType.EAGER)
-	@CollectionTable(name = "ELTERNPRIORITAETSGRUND", joinColumns = { @JoinColumn(name = "id"),
-			@JoinColumn(name = "exportId") })
+	@CollectionTable(name = "ELTERNPRIORITAETSGRUND", joinColumns = { @JoinColumn(name = "exportId"), @JoinColumn(name = "kinddatenId") })
 	@Column(name = "ELTERNPRIORITAETSGRUND_ID")
 	private List<Long> elternprioritaetsgruendeIds;
 
 	@ElementCollection(targetClass = Altersgruppe.class, fetch = FetchType.EAGER)
-	@CollectionTable(name = "ALTERSGRUPPE", joinColumns = { @JoinColumn(name = "kinddatenId"),
-			@JoinColumn(name = "exportId") })
+	@CollectionTable(name = "ALTERSGRUPPE", joinColumns = { @JoinColumn(name = "exportId"), @JoinColumn(name = "kinddatenId") })
 	private List<Altersgruppe> altersgruppen;
 
 	@ElementCollection(targetClass = BringAbholzeit.class, fetch = FetchType.EAGER)
-	@CollectionTable(name = "BRING_ABHOLZEIT", joinColumns = { @JoinColumn(name = "kinddatenId"),
-			@JoinColumn(name = "exportId") })
+	@CollectionTable(name = "BRING_ABHOLZEIT", joinColumns = { @JoinColumn(name = "exportId"), @JoinColumn(name = "kinddatenId") })
 	private List<BringAbholzeit> bringAbholzeiten;
-
+	
 	@ElementCollection(targetClass = Gruppe.class, fetch = FetchType.EAGER)
-	@CollectionTable(name = "GRUPPE", joinColumns = { @JoinColumn(name = "kinddatenId"),
-			@JoinColumn(name = "exportId") })
+	@CollectionTable(name = "GRUPPE", joinColumns = { @JoinColumn(name = "exportId"), @JoinColumn(name = "kinddatenId") })
 	private List<Gruppe> gruppen;
 
 	@ElementCollection(targetClass = Integration.class, fetch = FetchType.EAGER)
-	@CollectionTable(name = "INTEGRATION", joinColumns = { @JoinColumn(name = "kinddatenId"),
-			@JoinColumn(name = "exportId") })
+	@CollectionTable(name = "INTEGRATION", joinColumns = { @JoinColumn(name = "exportId"), @JoinColumn(name = "kinddatenId") })
 	private List<Integration> integrationen;
 
 	@ElementCollection(targetClass = Kontingent.class, fetch = FetchType.EAGER)
-	@CollectionTable(name = "KONTINGENT", joinColumns = { @JoinColumn(name = "kinddatenId"),
-			@JoinColumn(name = "exportId") })
+	@CollectionTable(name = "KONTINGENT", joinColumns = { @JoinColumn(name = "exportId"), @JoinColumn(name = "kinddatenId") })
 	private List<Kontingent> kontingente;
 
 }

@@ -4,7 +4,6 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
 import de.muenchen.rbs.kitafinderdatenservice.domain.Kind;
-import de.muenchen.rbs.kitafinderdatenservice.domain.Vertrag;
 import de.muenchen.rbs.kitafinderdatenservice.domain.events.Outboxevent;
 import de.muenchen.rbs.kitafinderdatenservice.service.OutboxeventService;
 import lombok.AllArgsConstructor;
