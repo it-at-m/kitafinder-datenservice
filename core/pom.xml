@@ -85,6 +85,13 @@
 		    <artifactId>mapstruct</artifactId>
         	<version>${org.mapstruct.version}</version>
 		</dependency>
+
+		<!-- Logging -->
+		<dependency>
+			<groupId>net.logstash.logback</groupId>
+			<artifactId>logstash-logback-encoder</artifactId>
+			<version>8.1</version>
+		</dependency>
 	</dependencies>
 
 </project>
