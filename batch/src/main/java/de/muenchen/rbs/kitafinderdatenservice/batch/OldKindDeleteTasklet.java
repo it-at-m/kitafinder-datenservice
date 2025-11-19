@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -79,6 +80,16 @@ public class OldKindDeleteTasklet implements Tasklet {
 		}
 
 		for (ExportRun run : runsToDelete) {
+			deleteDataForExportRun(run);
+		}
+
+		// delete data for all stuck or failed runs (keep only the current run)
+		JobParameters parameters = contribution.getStepExecution().getJobParameters();
+		long exportRunId = parameters.getLong("EXPORT_ID");
+		List<ExportRun> stuckRuns = exportRunRepository.findAllRunningOrFailed().stream()
+				.filter(r -> r.getId() != exportRunId).toList();
+
+		for (ExportRun run : stuckRuns) {
 			deleteDataForExportRun(run);
 		}
 
