@@ -32,7 +32,7 @@ import de.muenchen.rbs.kitafinderdatenservice.batch.KindmappenIdDeleteTasklet;
 import de.muenchen.rbs.kitafinderdatenservice.batch.KindmappenIdRestReader;
 import de.muenchen.rbs.kitafinderdatenservice.batch.KindmappenProcessor;
 import de.muenchen.rbs.kitafinderdatenservice.batch.KindmappenRestReader;
-import de.muenchen.rbs.kitafinderdatenservice.batch.OldKindDeleteTasklet;
+import de.muenchen.rbs.kitafinderdatenservice.batch.OldDataDeleteTasklet;
 import de.muenchen.rbs.kitafinderdatenservice.batch.VertragEventProcessor;
 import de.muenchen.rbs.kitafinderdatenservice.domain.Kind;
 import de.muenchen.rbs.kitafinderdatenservice.domain.KindExportResult;
@@ -172,7 +172,7 @@ public class BatchConfiguration {
 
 	@Bean
 	public Step oldDataDeleteStep(TaskExecutor taskExecutor, JobRepository jobRepository,
-			JpaTransactionManager transactionManager, OldKindDeleteTasklet task) {
+			JpaTransactionManager transactionManager, OldDataDeleteTasklet task) {
 		return new StepBuilder("oldDataDeleteStep", jobRepository)
 				.tasklet(task, transactionManager)
 				.allowStartIfComplete(true)

@@ -14,32 +14,25 @@ import org.springframework.stereotype.Component;
 
 import de.muenchen.rbs.kitafinderdatenservice.domain.ExportRun;
 import de.muenchen.rbs.kitafinderdatenservice.domain.ExportStatus;
-import de.muenchen.rbs.kitafinderdatenservice.repository.BewerbungRepository;
 import de.muenchen.rbs.kitafinderdatenservice.repository.ExportRunRepository;
 import de.muenchen.rbs.kitafinderdatenservice.repository.KindRepository;
-import de.muenchen.rbs.kitafinderdatenservice.repository.VertragRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class OldKindDeleteTasklet implements Tasklet {
+public class OldDataDeleteTasklet implements Tasklet {
 
 	private final KindRepository kindRepository;
-	private final BewerbungRepository bewerbungRepository;
-	private final VertragRepository vertragRepository;
 	private final ExportRunRepository exportRunRepository;
 
 	private final int cleanupKeepAge;
 	private final int cleanupKeepNumber;
 
-	public OldKindDeleteTasklet(KindRepository kindRepository, BewerbungRepository bewerbungRepository,
-			VertragRepository vertragRepository, ExportRunRepository exportRunRepository,
+	public OldDataDeleteTasklet(KindRepository kindRepository, ExportRunRepository exportRunRepository,
 			@Value("${app.kitafinder.cleanup-keep-age:2}") int cleanupKeepAge,
 			@Value("${app.kitafinder.cleanup-keep-number:2}") int cleanupKeepNumber) {
 		super();
 		this.kindRepository = kindRepository;
-		this.bewerbungRepository = bewerbungRepository;
-		this.vertragRepository = vertragRepository;
 		this.exportRunRepository = exportRunRepository;
 		this.cleanupKeepAge = cleanupKeepAge;
 
@@ -99,10 +92,6 @@ public class OldKindDeleteTasklet implements Tasklet {
 	private void deleteDataForExportRun(ExportRun run) {
 		log.info("Delete data for {}", run.toString());
 
-		// delete directly to avoid problems with InheritanceType.JOINED and
-		// Cascade-deleting
-		bewerbungRepository.deleteByExportId(run.getId());
-		vertragRepository.deleteByExportId(run.getId());
 		kindRepository.deleteByExportId(run.getId());
 
 		run.setStatus(ExportStatus.DELETED);

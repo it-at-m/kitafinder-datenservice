@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -16,7 +15,7 @@ public interface KindRepository extends PagingAndSortingRepository<Kind, ExportI
 
 	@Query(value = "SELECT * FROM KIND_AKTUELL WHERE id = :id", nativeQuery = true)
 	Optional<Kind> findAktuellById(Long id);
-	
+
 	@Query(value = "SELECT * FROM KIND WHERE id = :id AND export_id = (SELECT MAX(ID) FROM EXPORT_RUN)", nativeQuery = true)
 	Optional<Kind> findMostRecentById(Long id);
 
@@ -26,8 +25,7 @@ public interface KindRepository extends PagingAndSortingRepository<Kind, ExportI
 	@Query(value = "SELECT * FROM KIND WHERE export_id = (SELECT MAX(ID) FROM EXPORT_RUN)", nativeQuery = true)
 	Page<Kind> findAllMostRecent(Pageable page);
 
-	@Modifying
-	@Query(value = "DELETE FROM Kind K WHERE K.exportId = :exportId")
+	@Query(value = "SELECT delete_by_export_id(:exportId)", nativeQuery = true)
 	int deleteByExportId(Long exportId);
 
 	@Query(value = """

@@ -27,7 +27,7 @@ app:
     id-batch-size: 250
     data-batch-size: 50
     cleanup-keep-age: -1
-    cleanup-keep-number: 3
+    cleanup-keep-number: 1
 ---
 spring:
   config:
