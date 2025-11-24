@@ -22,6 +22,6 @@ public class Vertrag extends KindDatenstand {
 	@ElementCollection(targetClass = Vertragsabschnitt.class, fetch = FetchType.EAGER)
 	@CollectionTable(name = "VERTRAGSABSCHNITT", joinColumns = { @JoinColumn(name = "kinddatenId"),
 			@JoinColumn(name = "exportId") })
-	private List<Vertragsabschnitt> verträge;
+	private List<Vertragsabschnitt> vertraege;
 
 }

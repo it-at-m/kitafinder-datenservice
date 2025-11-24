@@ -19,9 +19,9 @@ import lombok.ToString;
 @Table(name = "SORGEBERECHTIGTER")
 public class Sorgeberechtigter {
 	@Id
-	private Integer id;
+	private Long id;
 	@Id
-	private Integer exportId;
+	private Long exportId;
 
 	@ToString.Exclude
 	@EqualsAndHashCode.Exclude
@@ -54,7 +54,7 @@ public class Sorgeberechtigter {
 	private Boolean erstStudiumAusbildung;
 	private Double wochenarbeitszeit;
 	private Double wochenarbeitstage;
-	private Integer lageDerArbeitszeitId;
+	private Long lageDerArbeitszeitId;
 	private Boolean arbeitsuchend;
 	private LocalDate arbeitsuchendSeit;
 }

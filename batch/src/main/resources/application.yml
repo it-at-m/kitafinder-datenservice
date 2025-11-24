@@ -11,17 +11,23 @@ spring:
   codec:
     max-in-memory-size: 16MB
 
+  jpa.properties.hibernate:
+    jdbc.batch_size: 500
+    order_inserts: true
+    order_updates: true
+
 app:
-  log-intervall-pages: 20 
+  export.id: # override to restart a previous run
+  thread-count: 10
   kitafinder:
     base-url: http://kitafinder-plan-k3.muenchen.de/kitaplaner/api
     username: # provide locally
     password: # provide locally
-    timeout-seconds: 30
-    id-batch-size: 500
+    timeout-seconds: 20
+    id-batch-size: 250
     data-batch-size: 50
     cleanup-keep-age: -1
-    cleanup-keep-number: 0
+    cleanup-keep-number: 1
 ---
 spring:
   config:

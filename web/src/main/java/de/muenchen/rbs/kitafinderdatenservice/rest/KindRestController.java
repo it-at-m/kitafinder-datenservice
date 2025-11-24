@@ -38,14 +38,14 @@ public class KindRestController {
 	@Operation(summary = "Liefert alle bekannten Kind-Datensätze. Es wird jeweils der aktuellste Datensatz zurückgegeben.")
 	public PagedModel<KindDTO> findAll(@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "10") int size) {
-		Page<Kind> result = repository.findAllMostRecent(Pageable.ofSize(size).withPage(page));
+		Page<Kind> result = repository.findAllAktuell(Pageable.ofSize(size).withPage(page));
 		return new PagedModel<>(result.map(k -> mapper.kindToKindDTO(k)));
 	}
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Liefert einen Kind-Datensatz. Es wird der aktuellste Datensatz zur angegebenen Id zurückgegeben.")
-	public ResponseEntity<KindDTO> findOne(@PathVariable("id") Integer id) {
-		Optional<Kind> result = repository.findMostRecentById(id);
+	public ResponseEntity<KindDTO> findOne(@PathVariable("id") Long id) {
+		Optional<Kind> result = repository.findAktuellById(id);
 
 		if (result.isEmpty()) {
 			return (ResponseEntity<KindDTO>) ResponseEntity.notFound();

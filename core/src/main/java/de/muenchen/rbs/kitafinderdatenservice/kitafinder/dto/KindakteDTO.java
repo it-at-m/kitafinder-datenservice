@@ -2,9 +2,11 @@ package de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto;
 
 import java.util.List;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class KindakteDTO {
 	private int id;
 	private boolean masterkind;
@@ -34,7 +36,7 @@ public class KindakteDTO {
 	private String betreuungswunschAb;
 	private int betreuungswunschZeitId;
 	private int betreuungsformId;
-	private Integer prioWarteliste;
+	private Long prioWarteliste;
 	private int platzartId;
 	private String anmeldecode;
 	private boolean integrativplatzGewuenscht;
@@ -44,7 +46,7 @@ public class KindakteDTO {
 	private String bemerkungenZurBewerbung;
 	private boolean wechselkind;
 	private boolean wechselkindAngabeEltern;
-	private Integer prioEltern;
+	private Long prioEltern;
 	private int schulbezirkId;
 	private int jahrgangsstufeId;
 	private String umzugInSchulbezirkZum;
@@ -69,10 +71,10 @@ public class KindakteDTO {
 	private String kitaKibigId;
 	private SorgeberechtigterDTO sorgeberechtigter1;
 	private SorgeberechtigterDTO sorgeberechtigter2;
-	private List<Integer> besondereLageIds;
-	private List<Integer> elternprioritaetsgruendeIds;
+	private List<Long> besondereLageIds;
+	private List<Long> elternprioritaetsgruendeIds;
 	private List<AltersgruppeDTO> altersgruppen;
-	private List<VertragsabschnittDTO> verträge;
+	private List<VertragsabschnittDTO> vertraege;
 	private List<BringAbholzeitDTO> bringAbholzeiten;
 	private List<GruppeDTO> gruppen;
 	private List<IntegrationDTO> integrationen;

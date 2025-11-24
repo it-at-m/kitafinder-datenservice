@@ -34,15 +34,15 @@ class KitafinderWebRepositoryTest {
 		exportRepository.save(run);
 
 		Kind k = new Kind();
-		k.setId(1000);
+		k.setId(1000l);
 		k.setExportId(run.getId());
 
 		Bewerbung b = new Bewerbung();
-		b.setId(1000000);
+		b.setId(1000000l);
 		b.setExportId(run.getId());
 
 		Sorgeberechtigter sb = new Sorgeberechtigter();
-		sb.setId(2000);
+		sb.setId(2000l);
 		sb.setExportId(run.getId());
 		b.setSorgeberechtigter1(sb);
 

@@ -23,7 +23,7 @@ public class ExportRun {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EXPORT_ID_SEQUENCE_GENERATOR")
 	@SequenceGenerator(name = "EXPORT_ID_SEQUENCE_GENERATOR", sequenceName = "EXPORT_ID_SEQUENCE", allocationSize = 1)
-	private Integer id;
+	private Long id;
 
 	private LocalDateTime startTime;
 

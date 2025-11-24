@@ -24,6 +24,7 @@ import org.springframework.web.util.UriBuilder;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderExportDTO;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderKindmappenIdsDTO;
 import de.muenchen.rbs.kitafinderdatenservice.kitafinder.dto.KitafinderResponseDTO;
+import de.muenchen.rbs.kitafinderdatenservice.service.WebClientMetricsLogger;
 import io.netty.channel.ChannelOption;
 import lombok.extern.slf4j.Slf4j;
 import reactor.netty.http.client.HttpClient;
@@ -57,6 +58,7 @@ public class KitafinderExportService {
 	public KitafinderExportService(@Value("${app.kitafinder.base-url}") String baseUrl,
 			@Value("${app.kitafinder.timeout-seconds:30}") long timeoutSeconds,
 			@Value("${app.kitafinder.retry-attempts:3}") int retryMaxAttempts, WebClient.Builder webClientBuilder,
+			WebClientMetricsLogger webClientMetricsLogger,
 			@Value("${app.kitafinder.username}") String kitafinderApiUsername,
 			@Value("${app.kitafinder.password}") String kitafinderApiPassword) {
 		this.baseUrl = baseUrl;
@@ -72,7 +74,9 @@ public class KitafinderExportService {
 				Math.toIntExact(timeoutSeconds * 1000));
 
 		this.webClient = webClientBuilder.baseUrl(this.baseUrl)
-				.clientConnector(new ReactorClientHttpConnector(httpClient)).build();
+				.clientConnector(new ReactorClientHttpConnector(httpClient))
+				.filter(webClientMetricsLogger)
+				.build();
 	}
 
 	@Retryable(maxAttemptsExpression = "#{@retryMaxAttempts}", retryFor = { KitafinderExportException.class })
@@ -89,22 +93,27 @@ public class KitafinderExportService {
 				throw new KitafinderExportException(
 						"An error occured when calling kitafinder. Response code: " + response.getStatusCode().value());
 			} else if (response.getBody().getFehlermeldung() != null) {
+				log.debug("Kitafinder responded with a custom error:");
+				log.debug(response.getBody().getStacktrace());
 				throw new KitafinderExportException(response.getBody().getFehlermeldung());
 			} else {
 				return response.getBody();
 			}
 		} catch (WebClientRequestException | WebClientResponseException e) {
-			log.error("An error occured when calling the kitafinder.", e);
+			log.debug("An error occured when calling the kitafinder.", e);
 			throw new KitafinderExportException(e.getClass().getName());
 		}
 	}
 
-	public KitafinderExportDTO loadKitafinderData(Collection<Integer> kindMappenIds) {
+	public KitafinderExportDTO loadKitafinderData(Collection<Long> kindMappenIds) {
 		return this.kitafinderGetRequest(KitafinderExportDTO.class, uriBuilder -> uriBuilder.path("/rbs/kindmappen")
-				.queryParam("kindMappenIds", kindMappenIds.stream().map(i -> i.toString()).collect(Collectors.joining(","))).build());
+				// call isn't working with this parameter yet .queryParam("mitAbsagen", true)
+				.queryParam("kindMappenIds",
+						kindMappenIds.stream().map(i -> i.toString()).collect(Collectors.joining(",")))
+				.build());
 	}
 
-	public Collection<Integer> loadKitafinderKindmappenIds(int chunkSize, int offset) {
+	public Collection<Long> loadKitafinderKindmappenIds(int chunkSize, int offset) {
 		KitafinderKindmappenIdsDTO ids = this.kitafinderGetRequest(KitafinderKindmappenIdsDTO.class,
 				uriBuilder -> uriBuilder.path("/rbs/kindmappenids").queryParam("offset", offset)
 						.queryParam("fetch", chunkSize).build());

@@ -1,43 +1,40 @@
 package de.muenchen.rbs.kitafinderdatenservice.batch;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.scope.context.ChunkContext;
+import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import de.muenchen.rbs.kitafinderdatenservice.domain.ExportRun;
 import de.muenchen.rbs.kitafinderdatenservice.domain.ExportStatus;
-import de.muenchen.rbs.kitafinderdatenservice.repository.BewerbungRepository;
 import de.muenchen.rbs.kitafinderdatenservice.repository.ExportRunRepository;
 import de.muenchen.rbs.kitafinderdatenservice.repository.KindRepository;
-import de.muenchen.rbs.kitafinderdatenservice.repository.VertragRepository;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Transactional
 @Component
-public class KitafinderCleanupBatch {
+public class OldDataDeleteTasklet implements Tasklet {
 
-	private KindRepository kindRepository;
-	private BewerbungRepository bewerbungRepository;
-	private VertragRepository vertragRepository;
-	private ExportRunRepository runRepository;
+	private final KindRepository kindRepository;
+	private final ExportRunRepository exportRunRepository;
 
 	private final int cleanupKeepAge;
 	private final int cleanupKeepNumber;
 
-	public KitafinderCleanupBatch(KindRepository repository, BewerbungRepository bewerbungRepository,
-			VertragRepository VertragRepository, ExportRunRepository runRepository,
+	public OldDataDeleteTasklet(KindRepository kindRepository, ExportRunRepository exportRunRepository,
 			@Value("${app.kitafinder.cleanup-keep-age:2}") int cleanupKeepAge,
 			@Value("${app.kitafinder.cleanup-keep-number:2}") int cleanupKeepNumber) {
-		this.kindRepository = repository;
-		this.bewerbungRepository = bewerbungRepository;
-		this.vertragRepository = VertragRepository;
-		this.runRepository = runRepository;
+		super();
+		this.kindRepository = kindRepository;
+		this.exportRunRepository = exportRunRepository;
+		this.cleanupKeepAge = cleanupKeepAge;
 
 		if (cleanupKeepNumber < 1) {
 			log.warn(
@@ -46,13 +43,10 @@ public class KitafinderCleanupBatch {
 		} else {
 			this.cleanupKeepNumber = cleanupKeepNumber;
 		}
-
-		this.cleanupKeepAge = cleanupKeepAge;
 	}
 
-	public void cleanupOldRows() {
-		LocalDateTime exportStart = LocalDateTime.now();
-
+	@Override
+	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 		// Clean up anything older than the desired age.
 		// Add a few hours to account for small differences in start time or duration.
 		// This means any rows whose age in days is greater <cleanupAge> days gets
@@ -63,9 +57,8 @@ public class KitafinderCleanupBatch {
 		log.info("Starting Kitafinder cleanup. Keeping {} runs or runs newer than age {}...", cleanupKeepNumber,
 				cleanupKeepAge);
 
-		List<ExportRun> runs = runRepository.findAllSuccessfullOrdered();
+		List<ExportRun> runs = exportRunRepository.findAllSuccessfullOrdered();
 
-		int deletedRows = 0;
 		List<ExportRun> runsToKeep = new ArrayList<>();
 		List<ExportRun> runsToDelete = new ArrayList<>();
 		if (runs.size() > cleanupKeepNumber) {
@@ -79,27 +72,29 @@ public class KitafinderCleanupBatch {
 			}
 		}
 
-		log.info("Keeping runs {}", runsToKeep);
-		if (runsToDelete.size() > 0) {
-			log.info("Deleting runs {}", runsToDelete);
-
-			for (ExportRun run : runsToDelete) {
-				// delete directly to avoid problems with InheritanceType.JOINED and
-				// Cascade-deleting
-				bewerbungRepository.deleteByExportId(run.getId());
-				vertragRepository.deleteByExportId(run.getId());
-				deletedRows += kindRepository.deleteByExportId(run.getId());
-
-				run.setStatus(ExportStatus.DELETED);
-				runRepository.save(run);
-			}
-		} else {
-			log.info("No runs to delete.");
+		for (ExportRun run : runsToDelete) {
+			deleteDataForExportRun(run);
 		}
 
-		Duration duration = Duration.between(exportStart, LocalDateTime.now());
-		log.info("Kitafinder cleanup completed. Duration: {}, number of deleted rows: {}", duration.toString(),
-				deletedRows);
+		// delete data for all stuck or failed runs (keep only the current run)
+		JobParameters parameters = contribution.getStepExecution().getJobParameters();
+		long exportRunId = parameters.getLong("EXPORT_ID");
+		List<ExportRun> stuckRuns = exportRunRepository.findAllRunningOrFailed().stream()
+				.filter(r -> r.getId() != exportRunId).toList();
+
+		for (ExportRun run : stuckRuns) {
+			deleteDataForExportRun(run);
+		}
+
+		return RepeatStatus.FINISHED;
 	}
 
+	private void deleteDataForExportRun(ExportRun run) {
+		log.info("Delete data for {}", run.toString());
+
+		kindRepository.deleteByExportId(run.getId());
+
+		run.setStatus(ExportStatus.DELETED);
+		exportRunRepository.save(run);
+	}
 }

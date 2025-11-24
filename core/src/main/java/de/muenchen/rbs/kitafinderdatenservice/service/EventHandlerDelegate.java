@@ -8,7 +8,7 @@ import de.muenchen.rbs.kitafinderdatenservice.domain.events.Outboxevent;
  * Delegate, der Events aus der Outbox verarbeitet (und an externe System o.ä.
  * verschickt).
  * 
- * @author michael.prankl
+ * @author m.zollbrecht
  *
  */
 public interface EventHandlerDelegate extends Plugin<Outboxevent> {

@@ -20,10 +20,10 @@ public class ExportId implements Serializable {
 	/**
 	 * domain id
 	 */
-	private Integer id;
+	private Long id;
 	
 	/**
 	 * technical id referencing an export run
 	 */
-	private Integer exportId;
+	private Long exportId;
 }

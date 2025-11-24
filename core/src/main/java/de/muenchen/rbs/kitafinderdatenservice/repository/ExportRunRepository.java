@@ -7,9 +7,15 @@ import org.springframework.data.repository.CrudRepository;
 
 import de.muenchen.rbs.kitafinderdatenservice.domain.ExportRun;
 
-public interface ExportRunRepository extends CrudRepository<ExportRun, Integer> {
+public interface ExportRunRepository extends CrudRepository<ExportRun, Long> {
 
 	@Query(value = "SELECT e FROM ExportRun e WHERE e.status = de.muenchen.rbs.kitafinderdatenservice.domain.ExportStatus.SUCCESS ORDER BY e.startTime DESC")
 	List<ExportRun> findAllSuccessfullOrdered();
+	
+	@Query(value = "SELECT e FROM ExportRun e WHERE e.status = de.muenchen.rbs.kitafinderdatenservice.domain.ExportStatus.RUNNING OR e.status = de.muenchen.rbs.kitafinderdatenservice.domain.ExportStatus.ERROR ORDER BY e.startTime DESC")
+	List<ExportRun> findAllRunningOrFailed();
+	
+	@Query(value = "SELECT * FROM NEXTVAL('EXPORT_ID_SEQUENCE')", nativeQuery = true)
+	long getNextId();
 
 }

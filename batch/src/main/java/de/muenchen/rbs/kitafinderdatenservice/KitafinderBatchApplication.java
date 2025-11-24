@@ -1,24 +1,21 @@
 package de.muenchen.rbs.kitafinderdatenservice;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.retry.annotation.EnableRetry;
 
-import de.muenchen.rbs.kitafinderdatenservice.batch.KitafinderCleanupBatch;
-import de.muenchen.rbs.kitafinderdatenservice.batch.KitafinderDatenBatch;
-import de.muenchen.rbs.kitafinderdatenservice.batch.KitafinderIdBatch;
 import de.muenchen.rbs.kitafinderdatenservice.domain.ExportRun;
 import de.muenchen.rbs.kitafinderdatenservice.domain.ExportStatus;
 import de.muenchen.rbs.kitafinderdatenservice.repository.ExportRunRepository;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -27,60 +24,44 @@ import lombok.extern.slf4j.Slf4j;
 public class KitafinderBatchApplication implements CommandLineRunner {
 
 	@Autowired
-	private KitafinderIdBatch idBatch;
+	private JobLauncher jobLauncher;
+
 	@Autowired
-	private KitafinderDatenBatch datenBatch;
-	@Autowired
-	private KitafinderCleanupBatch cleanupBatch;
+	private Job kitafinderJob;
+
+	@Value("${app.export.id}")
+	private Long exportRunId;
+
 	@Autowired
 	private ExportRunRepository exportRunRepository;
-
-	@Autowired
-	private ApplicationContext context;
-
-	@Value("${app.auto-close:true}")
-	private boolean autoClose;
 
 	public static void main(String[] args) {
 		SpringApplication.run(KitafinderBatchApplication.class, args);
 	}
 
 	@Override
-	public void run(String... args) throws InterruptedException {
-		ExportRun run = new ExportRun();
-		run.setStatus(ExportStatus.RUNNING);
-		run.setStartTime(LocalDateTime.now());
-		run = exportRunRepository.save(run);
+	public void run(String... args) throws Exception {
+		JobParameters jobParameters;
+		ExportRun exportRun = new ExportRun();
+		if (exportRunId != null) {
+			throw new IllegalArgumentException("Restarting a previous run by providing an exportId is not yet supported.");
+			/*
+			exportRun = exportRunRepository.findById(exportRunId).orElseThrow(
+					() -> new IllegalStateException("Trying to restart a previous ExportRun that cannot be found."));
+			log.info("Restarting previous run with id {}...", exportRunId);
 
-		log.info("Starting export {} at {}...", run.getId(), run.getStartTime());
+			// interpret first parameter as ID to use
+			jobParameters = new JobParametersBuilder().addLong("EXPORT_ID", exportRunId).toJobParameters();
+			*/
+		} else {
+			exportRun.setStartTime(LocalDateTime.now());
+			exportRun.setStatus(ExportStatus.RUNNING);
+			exportRunRepository.save(exportRun);
+			log.info("Starting new run with id {}...", exportRun.getId());
 
-		try {
-			doExport(run.getId());
-			run.setStatus(ExportStatus.SUCCESS);
-		} catch (Exception e) {
-			e.printStackTrace();
-			run.setStatus(ExportStatus.ERROR);
+			jobParameters = new JobParametersBuilder().addLong("EXPORT_ID", exportRun.getId()).toJobParameters();
 		}
 
-		run.setEndTime(LocalDateTime.now());
-		run = exportRunRepository.save(run);
-
-		Duration duration = Duration.between(run.getStartTime(), run.getEndTime());
-		log.info("Finished export {} at {} with status {}. Took {}...", run.getId(), run.getEndTime(), run.getStatus(),
-				duration.toString());
-
-		if (autoClose) {
-			((ConfigurableApplicationContext) context).close();
-		}
+		jobLauncher.run(kitafinderJob, jobParameters);
 	}
-
-	@Transactional
-	private void doExport(Integer exportRunId) {
-		idBatch.loadKitafinderIds();
-
-		datenBatch.loadKitafinderData(exportRunId);
-
-		cleanupBatch.cleanupOldRows();
-	}
-
 }

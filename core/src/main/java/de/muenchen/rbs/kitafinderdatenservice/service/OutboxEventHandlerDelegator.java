@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
  * Service, der {@link Outboxevent}s konsumiert, an entsprechende Handler
  * weitergibt und den Status der Abarbeitung setzt.
  * 
- * @author michael.prankl
+ * @author m.zollbrecht
  *
  */
 @Service
