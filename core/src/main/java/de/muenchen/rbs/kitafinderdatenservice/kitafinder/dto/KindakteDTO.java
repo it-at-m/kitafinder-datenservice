@@ -74,7 +74,7 @@ public class KindakteDTO {
 	private List<Long> besondereLageIds;
 	private List<Long> elternprioritaetsgruendeIds;
 	private List<AltersgruppeDTO> altersgruppen;
-	private List<VertragsabschnittDTO> verträge;
+	private List<VertragsabschnittDTO> vertraege;
 	private List<BringAbholzeitDTO> bringAbholzeiten;
 	private List<GruppeDTO> gruppen;
 	private List<IntegrationDTO> integrationen;
