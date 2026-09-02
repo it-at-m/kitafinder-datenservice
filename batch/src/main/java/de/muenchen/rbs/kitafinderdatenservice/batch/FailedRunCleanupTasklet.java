@@ -30,7 +30,7 @@ public class FailedRunCleanupTasklet implements Tasklet {
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 		Long exportRunId = (Long) chunkContext.getStepContext().getJobParameters().get("EXPORT_ID");
-		log.info("Cleaning up after failed import...");
+		log.info("Cleaning up run {} after failed import...", exportRunId);
 
 		Optional<ExportRun> run = exportRunRepository.findById(exportRunId);
 		if (run.isPresent()) {
@@ -40,6 +40,7 @@ public class FailedRunCleanupTasklet implements Tasklet {
 
 			run.get().setStatus(ExportStatus.ERROR);
 			exportRunRepository.save(run.get());
+			log.info("Cleanup of run {} finished.", exportRunId);
 		} else {
 			log.warn("No run found. Nothing to clean up.");
 		}

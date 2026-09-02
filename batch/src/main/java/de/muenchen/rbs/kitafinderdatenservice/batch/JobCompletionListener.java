@@ -38,7 +38,7 @@ public class JobCompletionListener implements JobExecutionListener {
 
 		if (ExitStatus.COMPLETED.equals(jobExecution.getExitStatus()) && jobExecution.getStepExecutions().stream()
 				.filter(e -> !"eventGenerationDeciderStep".equals(e.getStepName()))
-				.noneMatch(e -> e.getExitStatus() == ExitStatus.FAILED)) {
+				.allMatch(e -> e.getExitStatus() == ExitStatus.COMPLETED)) {
 			exportRun.setStatus(ExportStatus.SUCCESS);
 		} else {
 			exportRun.setStatus(ExportStatus.ERROR);
