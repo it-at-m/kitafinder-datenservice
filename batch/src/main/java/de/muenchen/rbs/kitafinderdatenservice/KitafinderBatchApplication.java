@@ -7,6 +7,7 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -27,10 +28,15 @@ public class KitafinderBatchApplication implements CommandLineRunner {
 	private JobLauncher jobLauncher;
 
 	@Autowired
-	private Job kitafinderJob;
+	@Qualifier("importJob")
+	private Job importJob;
+	
+	@Autowired
+	@Qualifier("eventJob")
+	private Job eventJob;
 
-	@Value("${app.export.id}")
-	private Long exportRunId;
+	@Value("${app.eventsonly:false}")
+	private boolean eventsOnly;
 
 	@Autowired
 	private ExportRunRepository exportRunRepository;
@@ -43,13 +49,12 @@ public class KitafinderBatchApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		JobParameters jobParameters;
 		ExportRun exportRun = new ExportRun();
-		if (exportRunId != null) {
-			//throw new IllegalArgumentException("Restarting a previous run by providing an exportId is not yet supported.");
-			exportRun = exportRunRepository.findById(exportRunId).orElseThrow(
-					() -> new IllegalStateException("Trying to restart a previous ExportRun that cannot be found."));
-			log.info("Restarting previous run with id {}...", exportRunId);
+		if (eventsOnly) {
+			log.info("Generation events for previous run");
 
-			jobParameters = new JobParametersBuilder().addLong("EXPORT_ID", exportRunId).toJobParameters();
+			// add timestamp to allow multiple tries
+			jobParameters = new JobParametersBuilder().addLocalDateTime("START", LocalDateTime.now()).toJobParameters();
+			jobLauncher.run(eventJob, jobParameters);
 		} else {
 			exportRun.setStartTime(LocalDateTime.now());
 			exportRun.setStatus(ExportStatus.RUNNING);
@@ -57,8 +62,7 @@ public class KitafinderBatchApplication implements CommandLineRunner {
 			log.info("Starting new run with id {}...", exportRun.getId());
 
 			jobParameters = new JobParametersBuilder().addLong("EXPORT_ID", exportRun.getId()).toJobParameters();
+			jobLauncher.run(importJob, jobParameters);
 		}
-
-		jobLauncher.run(kitafinderJob, jobParameters);
 	}
 }

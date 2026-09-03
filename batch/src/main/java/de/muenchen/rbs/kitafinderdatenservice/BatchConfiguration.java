@@ -85,7 +85,7 @@ public class BatchConfiguration {
 		return new RepositoryItemWriterBuilder<Outboxevent>().repository(repository).build();
 	}
 
-	@Bean
+	@Bean(name = "importJob")
 	public Job kitafinderImportJob(JobRepository jobRepository, Step idImportStep, Step idDeleteStep,
 			Step dataImportStep, Step eventGenerationDeciderStep, Step newKindEventStep, Step newVertragEventStep,
 			Step cleanUpStep, Step oldDataDeleteStep, JobCompletionListener listener) {
@@ -102,6 +102,18 @@ public class BatchConfiguration {
 				.next(newVertragEventStep)
 				.next(oldDataDeleteStep)
 				.end().build();
+	}
+
+	@Bean(name = "eventJob")
+	public Job kitafinderEventJob(JobRepository jobRepository, Step idImportStep, Step idDeleteStep,
+			Step dataImportStep, Step eventGenerationDeciderStep, Step newKindEventStep, Step newVertragEventStep,
+			Step cleanUpStep, Step oldDataDeleteStep, JobCompletionListener listener) {
+		return new JobBuilder("kitafinderEventJob", jobRepository)
+				.listener(listener)
+				.start(newKindEventStep)
+				.next(newVertragEventStep)
+				.next(oldDataDeleteStep)
+				.build();
 	}
 
 	@Bean
