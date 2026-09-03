@@ -107,7 +107,7 @@ jobs:
             type=semver,pattern={{version}},value=${{ inputs.version }},enable=${{ github.event_name == 'workflow_dispatch' }}
 
       - name: Build and push untested Docker image to GHCR (BATCH)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5.4.0
         with:
           context: ${{ env.MVN_SUBPROJECT_BATCH }}
           push: ${{ github.event.inputs.version != '' }}
@@ -123,7 +123,7 @@ jobs:
             type=semver,pattern={{version}},value=${{ inputs.version }},enable=${{ github.event_name == 'workflow_dispatch' }}
 
       - name: Build and push untested Docker image to GHCR (WEB)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5.4.0
         with:
           context: ${{ env.MVN_SUBPROJECT_WEB }}
           push: ${{ github.event.inputs.version != '' }}
