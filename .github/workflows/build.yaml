@@ -9,7 +9,7 @@ on:
           type: string
           required: true
           description: semver - If set, the image will be published to ghcr.io with the semver as image-Tag.
-          default: ''
+          default: '0.0.dev'
 
 env:
   MVN_PROJECT_ROOT: ./

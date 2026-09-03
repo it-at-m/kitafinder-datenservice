@@ -105,14 +105,11 @@ public class BatchConfiguration {
 	}
 
 	@Bean(name = "eventJob")
-	public Job kitafinderEventJob(JobRepository jobRepository, Step idImportStep, Step idDeleteStep,
-			Step dataImportStep, Step eventGenerationDeciderStep, Step newKindEventStep, Step newVertragEventStep,
-			Step cleanUpStep, Step oldDataDeleteStep, JobCompletionListener listener) {
+	public Job kitafinderEventJob(JobRepository jobRepository, Step eventGenerationDeciderStep, Step newKindEventStep, Step newVertragEventStep) {
 		return new JobBuilder("kitafinderEventJob", jobRepository)
-				.listener(listener)
-				.start(newKindEventStep)
+				.start(eventGenerationDeciderStep)
+				.next(newKindEventStep)
 				.next(newVertragEventStep)
-				.next(oldDataDeleteStep)
 				.build();
 	}
 
