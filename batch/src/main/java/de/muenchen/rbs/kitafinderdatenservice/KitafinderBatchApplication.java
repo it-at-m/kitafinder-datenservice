@@ -44,15 +44,12 @@ public class KitafinderBatchApplication implements CommandLineRunner {
 		JobParameters jobParameters;
 		ExportRun exportRun = new ExportRun();
 		if (exportRunId != null) {
-			throw new IllegalArgumentException("Restarting a previous run by providing an exportId is not yet supported.");
-			/*
+			//throw new IllegalArgumentException("Restarting a previous run by providing an exportId is not yet supported.");
 			exportRun = exportRunRepository.findById(exportRunId).orElseThrow(
 					() -> new IllegalStateException("Trying to restart a previous ExportRun that cannot be found."));
 			log.info("Restarting previous run with id {}...", exportRunId);
 
-			// interpret first parameter as ID to use
 			jobParameters = new JobParametersBuilder().addLong("EXPORT_ID", exportRunId).toJobParameters();
-			*/
 		} else {
 			exportRun.setStartTime(LocalDateTime.now());
 			exportRun.setStatus(ExportStatus.RUNNING);
