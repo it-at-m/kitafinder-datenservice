@@ -100,7 +100,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker (BATCH)
         id: meta1
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
           images: ghcr.io/${{ github.repository }}-batch
           tags: |
@@ -116,7 +116,7 @@ jobs:
           
       - name: Extract metadata (tags, labels) for Docker (WEB)
         id: meta2
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
           images: ghcr.io/${{ github.repository }}-web
           tags: |
