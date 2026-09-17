@@ -17,8 +17,10 @@ spring:
     order_updates: true
 
 app:
-  export.id: # override to restart a previous run
   thread-count: 10
+  # set limits for expected events and changes. Limits over the set value will lead cause the run to stop and fail
+  event-threshold: 20000
+  kind-difference-threshold: 10000
   kitafinder:
     base-url: http://kitafinder-plan-k3.muenchen.de/kitaplaner/api
     username: # provide locally

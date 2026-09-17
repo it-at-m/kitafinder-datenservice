@@ -25,6 +25,9 @@ public interface KindRepository extends PagingAndSortingRepository<Kind, ExportI
 	@Query(value = "SELECT * FROM KIND WHERE export_id = (SELECT MAX(ID) FROM EXPORT_RUN)", nativeQuery = true)
 	Page<Kind> findAllMostRecent(Pageable page);
 
+	@Query(value = "SELECT * FROM KIND WHERE export_id = :exportId", nativeQuery = true)
+	Page<Kind> findByExportId(Long exportId, Pageable page);
+
 	@Query(value = "SELECT delete_by_export_id(:exportId)", nativeQuery = true)
 	int deleteByExportId(Long exportId);
 

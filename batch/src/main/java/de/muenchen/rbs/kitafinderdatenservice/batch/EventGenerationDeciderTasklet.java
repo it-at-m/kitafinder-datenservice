@@ -6,6 +6,7 @@ import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,9 @@ public class EventGenerationDeciderTasklet implements Tasklet {
 	private final ExportRunRepository exportRunRepository;
 	private final KindRepository kindRepository;
 	private final VertragRepository vertragRepository;
+	
+	@Value("${app.event-threshold:20000}")
+	private int eventThreshold;
 
 	public EventGenerationDeciderTasklet(ExportRunRepository exportRunRepository, KindRepository kindRepository, VertragRepository vertragRepository) {
 		super();
@@ -42,7 +46,7 @@ public class EventGenerationDeciderTasklet implements Tasklet {
 			Page<Vertrag> newVertrag = vertragRepository.findNew(Pageable.ofSize(1));
 			log.info("Expecting {} new Kind events.", newKind.getTotalElements());
 			log.info("Expecting {} new Vertrag events.", newVertrag.getTotalElements());
-			if (newKind.getTotalElements() > 20000 || newVertrag.getTotalElements() > 20000) {
+			if (newKind.getTotalElements() > eventThreshold || newVertrag.getTotalElements() > eventThreshold) {
 				log.error("Detected more new events than logically feasible. It seems like something went wrong, so this run will not generate any events...");
 				throw new RuntimeException("Not enough previous runs to generate events.");
 			}
