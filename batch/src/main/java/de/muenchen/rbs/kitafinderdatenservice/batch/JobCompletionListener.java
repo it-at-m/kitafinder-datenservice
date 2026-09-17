@@ -8,6 +8,7 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,9 @@ public class JobCompletionListener implements JobExecutionListener {
 
 	@Autowired
 	ThreadPoolTaskExecutor executor;
+	
+	@Value("${app.ignoreeventsforsuccess:false}")
+	private boolean ignoreEventsForSuccess;
 
 	@Override
 	public void afterJob(JobExecution jobExecution) {
@@ -37,9 +41,11 @@ public class JobCompletionListener implements JobExecutionListener {
 				() -> new IllegalStateException("Trying to restart a previous ExportRun that cannot be found."));
 
 		if (ExitStatus.COMPLETED.equals(jobExecution.getExitStatus()) && jobExecution.getStepExecutions().stream()
-				.filter(e -> !"eventGenerationDeciderStep".equals(e.getStepName()))
+				// if ignore is set filter out the eventgenerationdecider step
+				.filter(e -> !ignoreEventsForSuccess || !"eventGenerationDeciderStep".equals(e.getStepName()))
+				// make sure no run is failed
 				.noneMatch(e -> e.getExitStatus() == ExitStatus.FAILED)) {
-			log.info("All steps executed successfully. Setting Job Status to SUCCESS.");
+			log.info("All relevant steps executed successfully. Setting Job Status to SUCCESS.");
 			exportRun.setStatus(ExportStatus.SUCCESS);
 		} else {
 			log.warn("Detected one or more FAILED steps. Setting Job Status to ERROR.");

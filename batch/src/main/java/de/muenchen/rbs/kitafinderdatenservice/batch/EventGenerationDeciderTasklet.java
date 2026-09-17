@@ -38,10 +38,14 @@ public class EventGenerationDeciderTasklet implements Tasklet {
 		List<ExportRun> runs = exportRunRepository.findAllSuccessfullOrdered();
 
 		if (runs.size() >= 1) {
-			Page<Kind> newKind = kindRepository.findNew(Pageable.unpaged());
-			Page<Vertrag> newVertrag = vertragRepository.findNew(Pageable.unpaged());
+			Page<Kind> newKind = kindRepository.findNew(Pageable.ofSize(1));
+			Page<Vertrag> newVertrag = vertragRepository.findNew(Pageable.ofSize(1));
 			log.info("Expecting {} new Kind events.", newKind.getTotalElements());
 			log.info("Expecting {} new Vertrag events.", newVertrag.getTotalElements());
+			if (newKind.getTotalElements() > 20000 || newVertrag.getTotalElements() > 20000) {
+				log.error("Detected more new events than logically feasible. It seems like something went wrong, so this run will not generate any events...");
+				throw new RuntimeException("Not enough previous runs to generate events.");
+			}
 
 			Page<Kind> kindAktuell = kindRepository.findAllAktuell(Pageable.ofSize(1));
 			kindAktuell.get().findAny().ifPresentOrElse(k -> {
